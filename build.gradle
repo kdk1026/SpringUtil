@@ -1,3 +1,7 @@
+/**
+ * Gradle Version 7.2
+ *   - Window > Preferences > Gradle > Specific Gradle version
+ */
 plugins {
 	id 'org.springframework.boot' version '2.5.3'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
@@ -37,6 +41,14 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web-services
 	implementation 'org.springframework.boot:spring-boot-starter-web-services:2.5.3'
 	
+	// Gradle이 예전 버전이라 그런지 디펜더시가 안된다...
+	// 일단 프로젝트 빌드 패스에 CommonJava8 프로젝트 추가해서 사용...
+	// 플젝도 아니고, 개인 참고용이니 대충 쓴다.
+	//implementation group: 'kdk', name: 'CommonJava8', version: '0.2'
+	
+	// https://mvnrepository.com/artifact/org.projectlombok/lombok
+	compileOnly 'org.projectlombok:lombok:1.18.20'
+
 }
 
 test {

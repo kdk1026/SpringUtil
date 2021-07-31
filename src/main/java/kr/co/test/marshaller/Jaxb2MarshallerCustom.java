@@ -25,6 +25,13 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
  * </pre>
  * 
  * XML은 사장된거나 마찬가지라 전혀 의미 없을 듯....
+ * 
+ * <pre>
+ * @see <a href="https://github.com/kdk1026/SpringBootPractice/blob/master/SpringBootPractice/src/main/java/kr/co/test/config/spring/MvcConfig.java">설정 참고</a>
+ * extends WebMvcConfigurerAdapter 시절 까지만... 
+ * 	jaxbMarshaller(), jaxbView() 
+ * implements WebMvcConfigurer 에서의 설정은 모름
+ * </pre>
  * @author 김대광
  */
 public class Jaxb2MarshallerCustom {
