@@ -133,7 +133,21 @@ public class MailSenderComponentImpl implements MailSenderComponent {
 	@Async
 	@Override
 	public void sendmailAsync(boolean html, String mailTo, String mailSubject, String mailMsg) {
-		this.sendmailWithAttachFile(html, mailTo, mailSubject, mailMsg, null);
+		MimeMessage message = mailSender.createMimeMessage();
+		
+		try {
+			MimeMessageHelper helper = new MimeMessageHelper(message, false);
+			
+			helper.setFrom(this.mailFrom);
+			helper.setTo(mailTo);
+			helper.setSubject(mailSubject);
+			helper.setText(mailMsg, html);
+			
+			mailSender.send(message);
+			
+		} catch (Exception e) {
+			logger.error("", e);
+		}
 	}
 	
 }
