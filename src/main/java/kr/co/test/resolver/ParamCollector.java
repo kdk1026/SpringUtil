@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import common.util.map.ParamMap;
 import lombok.Getter;
 import lombok.Setter;
 

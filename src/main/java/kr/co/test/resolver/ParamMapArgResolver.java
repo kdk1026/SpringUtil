@@ -5,14 +5,18 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
@@ -23,9 +27,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import common.LogDeclare;
-import common.util.json.JacksonUtil;
-import common.util.map.ParamMap;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * <pre>
@@ -42,7 +44,9 @@ import common.util.map.ParamMap;
  *
  * @author 김대광
  */
-public class ParamMapArgResolver extends LogDeclare implements HandlerMethodArgumentResolver {
+public class ParamMapArgResolver implements HandlerMethodArgumentResolver {
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	/**
 	 * Java 1.7 Base 
@@ -171,9 +175,9 @@ public class ParamMapArgResolver extends LogDeclare implements HandlerMethodArgu
             buffer.close();
 
             if (sb.toString().startsWith("[")) {
-            	paramCollector.put("JSONArray", JacksonUtil.FromJson.converterJsonStrToList(sb.toString()));
+            	paramCollector.put("JSONArray", InnerJacksonUtil.FromJson.converterJsonStrToList(sb.toString()));
             } else {
-            	Map<String, Object> convertMap = JacksonUtil.FromJson.converterJsonStrToMap(sb.toString());
+            	Map<String, Object> convertMap = InnerJacksonUtil.FromJson.converterJsonStrToMap(sb.toString());
             	paramCollector.putAll(convertMap);
             }
 
@@ -181,6 +185,38 @@ public class ParamMapArgResolver extends LogDeclare implements HandlerMethodArgu
 			logger.error(e.getClass().getSimpleName());
 			logger.debug(e.getCause().getMessage());
 		}
+    }
+    
+    private static class InnerJacksonUtil {
+    	private static final Logger logger = LoggerFactory.getLogger(InnerJacksonUtil.class);
+    	
+    	private static class FromJson {
+    		@SuppressWarnings("unchecked")
+    		public static Map<String, Object> converterJsonStrToMap(String jsonStr) {
+    			Map<String, Object> map = new HashMap<>();
+
+    			ObjectMapper mapper = new ObjectMapper();
+    			try {
+    				map = mapper.readValue(jsonStr, Map.class);
+    			} catch (Exception e) {
+    				logger.error("", e);
+    			}
+    			return map;
+    		}
+    		
+    		@SuppressWarnings("unchecked")
+    		public static List<Map<String, Object>> converterJsonStrToList(String jsonArrStr) {
+    			List<Map<String, Object>> list = new ArrayList<>();
+
+    			ObjectMapper mapper = new ObjectMapper();
+    			try {
+    				list = mapper.readValue(jsonArrStr, List.class);
+    			} catch (Exception e) {
+    				logger.error("", e);
+    			}
+    			return list;
+    		}
+    	}
     }
 
 }
