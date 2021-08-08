@@ -1,8 +1,13 @@
 package kr.co.test.mail;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.concurrent.TimeUnit;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import kr.co.test.component.email.MailSenderComponent;
 
@@ -21,15 +26,21 @@ public class MailAsyncTextTest {
 	
 	@Autowired
 	private MailSenderComponent mailSenderComponent;
+	
+	@Autowired
+	private ThreadPoolTaskExecutor executor;
 
 	@Test
-	public void test() {
-		String mailTo = "daekwang1026@gmail.com";
+	public void test() throws IllegalStateException, InterruptedException {
+		String mailTo = "kdk1026@naver.com";
 		String mailSubject = "메일 테스트 (텍스트)";
 		String mailMsg = "테스트 12345";
 		
-		// TODO : 얼라료? 발송이 안된다... 구름인가 눈은가 저 높은곳 킬리만자로... 나중에 연구하자... XML 시절 프로젝트 소스 까봐도 맞는데...설정 문제같은데...
+		// TODO : 음... 비동기는 단위 테스트 방법이 독특한듯.. 컨트롤러에서 서비스 호출하게 해놓고, 웹에서 호출하면 돌거 같다...
 		mailSenderComponent.sendmailAsync(false, mailTo, mailSubject, mailMsg);
+		
+		boolean awaitTermination = executor.getThreadPoolExecutor().awaitTermination(3, TimeUnit.SECONDS);
+		assertTrue(awaitTermination);
 	}
 	
 }

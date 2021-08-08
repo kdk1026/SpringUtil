@@ -31,7 +31,7 @@ public class AsyncConfig extends AsyncConfigurerSupport {
         executor.setCorePoolSize(2);
         executor.setMaxPoolSize(10);
         executor.setQueueCapacity(500);
-//        executor.setThreadNamePrefix("kdk-async-");
+        executor.setThreadNamePrefix("kdk-async-");
         executor.initialize();
         return executor;
 	}

@@ -41,7 +41,7 @@ public class MailMultiTextTest {
 		String mailSubject = "메일 테스트 (텍스트)";
 		String mailMsg = "테스트 12345";
 		
-		System.out.println( mailSenderComponent.sendmail(false, mailTos, mailSubject, mailMsg) );
+		System.out.println( mailSenderComponent.sendMail(true, mailTos, mailSubject, mailMsg) ); 
 	}
 	
 }
