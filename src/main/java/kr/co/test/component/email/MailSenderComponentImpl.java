@@ -63,9 +63,15 @@ public class MailSenderComponentImpl implements MailSenderComponent {
 	}
 
 	@Override
-	public MailMultiSendResult sendmail(boolean html, List<String> mailTos, String mailSubject, String mailMsg) {
-		return this.sendmailWithAttachFile(html, mailTos, mailSubject, mailMsg, null);
+	public boolean sendMail(boolean html, List<String> mailToList, String mailSubject, String mailMsg) {
+		return this.sendmailWithAttachFile(html, mailToList, mailSubject, mailMsg, null);
 	}
+	
+	@Override
+	public MailMultiSendResult sendmailResult(boolean html, List<String> mailToList, String mailSubject, String mailMsg) {
+		return this.sendmailWithAttachFileResult(html, mailToList, mailSubject, mailMsg, null);
+	}
+	
 
 	@Override
 	public boolean sendmailWithAttachFile(boolean html, String mailTo, String mailSubject, String mailMsg,
@@ -97,10 +103,42 @@ public class MailSenderComponentImpl implements MailSenderComponent {
 		
 		return isSuccess;
 	}
-
+	
 	@Override
-	public MailMultiSendResult sendmailWithAttachFile(boolean html, List<String> mailTos, String mailSubject, String mailMsg,
+	public boolean sendmailWithAttachFile(boolean html, List<String> mailToList, String mailSubject, String mailMsg,
 			File attachFile) {
+		boolean isSuccess = false;
+		
+		String[] mailTos = mailToList.toArray( new String[mailToList.size()] );
+		MimeMessage message = mailSender.createMimeMessage();
+		
+		try {
+			MimeMessageHelper helper = new MimeMessageHelper(message, (attachFile != null) );
+			
+			helper.setFrom(this.mailFrom);
+			helper.setTo(mailTos);
+			helper.setSubject(mailSubject);
+			helper.setText(mailMsg, html);
+			
+			if ( attachFile != null ) {
+				FileSystemResource fileResource = new FileSystemResource(attachFile);
+				helper.addAttachment(fileResource.getFilename(), fileResource);
+			}
+			
+			mailSender.send(message);
+			
+			isSuccess = true;
+			
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+		
+		return isSuccess;
+	}
+	
+	@Override
+	public MailMultiSendResult sendmailWithAttachFileResult(boolean html, List<String> mailToList, String mailSubject,
+			String mailMsg, File attachFile) {
 		MailMultiSendResult mailMultiSendResult = new MailMultiSendResult();
 		
 		int nSuccessCnt = 0;
@@ -109,7 +147,7 @@ public class MailSenderComponentImpl implements MailSenderComponent {
 		
 		List<String> failureMailTos = new ArrayList<>();
 		
-		for (String mailTo : mailTos) {
+		for (String mailTo : mailToList) {
 			boolean isSuccess = this.sendmailWithAttachFile(html, mailTo, mailSubject, mailMsg, attachFile);
 			
 			if ( isSuccess ) {
