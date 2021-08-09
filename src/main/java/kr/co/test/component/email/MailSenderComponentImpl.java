@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -170,22 +171,57 @@ public class MailSenderComponentImpl implements MailSenderComponent {
 
 	@Async
 	@Override
-	public void sendmailAsync(boolean html, String mailTo, String mailSubject, String mailMsg) {
+	public void asyncSendmail(boolean html, String mailTo, String mailSubject, String mailMsg) throws MessagingException {
+		this.asyncSendmailWithAttachFile(html, mailTo, mailSubject, mailMsg, null);
+	}
+
+	@Async
+	@Override
+	public void asyncSendmail(boolean html, List<String> mailToList, String mailSubject, String mailMsg) throws MessagingException {
+		this.asyncSendmailWithAttachFile(html, mailToList, mailSubject, mailMsg, null);
+	}
+
+	@Async
+	@Override
+	public void asyncSendmailWithAttachFile(boolean html, String mailTo, String mailSubject, String mailMsg,
+			File attachFile) throws MessagingException {
 		MimeMessage message = mailSender.createMimeMessage();
 		
-		try {
-			MimeMessageHelper helper = new MimeMessageHelper(message, false);
-			
-			helper.setFrom(this.mailFrom);
-			helper.setTo(mailTo);
-			helper.setSubject(mailSubject);
-			helper.setText(mailMsg, html);
-			
-			mailSender.send(message);
-			
-		} catch (Exception e) {
-			logger.error("", e);
+		MimeMessageHelper helper = new MimeMessageHelper(message, (attachFile != null) );
+		
+		helper.setFrom(this.mailFrom);
+		helper.setTo(mailTo);
+		helper.setSubject(mailSubject);
+		helper.setText(mailMsg, html);
+		
+		if ( attachFile != null ) {
+			FileSystemResource fileResource = new FileSystemResource(attachFile);
+			helper.addAttachment(fileResource.getFilename(), fileResource);
 		}
+		
+		mailSender.send(message);
+	}
+
+	@Async
+	@Override
+	public void asyncSendmailWithAttachFile(boolean html, List<String> mailToList, String mailSubject, String mailMsg,
+			File attachFile) throws MessagingException {
+		String[] mailTos = mailToList.toArray( new String[mailToList.size()] );
+		MimeMessage message = mailSender.createMimeMessage();
+		
+		MimeMessageHelper helper = new MimeMessageHelper(message, (attachFile != null) );
+		
+		helper.setFrom(this.mailFrom);
+		helper.setTo(mailTos);
+		helper.setSubject(mailSubject);
+		helper.setText(mailMsg, html);
+		
+		if ( attachFile != null ) {
+			FileSystemResource fileResource = new FileSystemResource(attachFile);
+			helper.addAttachment(fileResource.getFilename(), fileResource);
+		}
+		
+		mailSender.send(message);	
 	}
 	
 }

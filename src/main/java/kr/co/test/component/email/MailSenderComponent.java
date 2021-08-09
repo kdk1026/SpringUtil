@@ -3,6 +3,8 @@ package kr.co.test.component.email;
 import java.io.File;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import kr.co.test.component.email.MailSenderComponentImpl.MailMultiSendResult;
 
 /**
@@ -89,12 +91,45 @@ public interface MailSenderComponent {
 	public MailMultiSendResult sendmailWithAttachFileResult(boolean html, List<String> mailToList, String mailSubject, String mailMsg, File attachFile);
 	
 	/**
-	 * 비동기 일반 메일 발송
+	 * <비동기> 일반 메일 발송
 	 * @param html
 	 * @param mailTo
 	 * @param mailSubject
 	 * @param mailMsg
+	 * @throws MessagingException
 	 */
-	public void sendmailAsync(boolean html, String mailTo, String mailSubject, String mailMsg);
+	public void asyncSendmail(boolean html, String mailTo, String mailSubject, String mailMsg) throws MessagingException;
+	
+	/**
+	 * <비동기> 대량 메일 발송
+	 * @param html
+	 * @param mailToList
+	 * @param mailSubject
+	 * @param mailMsg
+	 * @throws MessagingException
+	 */
+	public void asyncSendmail(boolean html, List<String> mailToList, String mailSubject, String mailMsg) throws MessagingException;
+	
+	/**
+	 * <비동기> 첨부 파일 일반 메일 발송
+	 * @param html
+	 * @param mailTo
+	 * @param mailSubject
+	 * @param mailMsg
+	 * @param attachFile
+	 * @throws MessagingException
+	 */
+	public void asyncSendmailWithAttachFile(boolean html, String mailTo, String mailSubject, String mailMsg, File attachFile) throws MessagingException;
+	
+	/**
+	 * <비동기> 첨부 파일 대량 메일 발송
+	 * @param html
+	 * @param mailToList
+	 * @param mailSubject
+	 * @param mailMsg
+	 * @param attachFile
+	 * @throws MessagingException
+	 */
+	public void asyncSendmailWithAttachFile(boolean html, List<String> mailToList, String mailSubject, String mailMsg, File attachFile) throws MessagingException;
 	
 }
