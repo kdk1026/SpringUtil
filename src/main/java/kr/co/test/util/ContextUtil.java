@@ -59,7 +59,7 @@ public class ContextUtil {
 	 * HttpServletResponse 객체를 직접 얻습니다.
 	 * @return
 	 */
-	public static HttpServletResponse getResponse() {
+	public HttpServletResponse getResponse() {
 		ServletRequestAttributes attr = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
 		return attr.getResponse();
 	}
