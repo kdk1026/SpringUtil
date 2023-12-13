@@ -19,6 +19,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
  * -----------------------------------
  * 2021. 7. 30. 김대광	최초작성
  * </pre>
- * 
+ *
  * <pre>
  * 업로드 시, 의존성 라이브러리 필요 없다는게 장점
  * 익숙하지 않다는게 단점
@@ -38,11 +39,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class Spring4FileUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(Spring4FileUtil.class);
-	
+
 	private Spring4FileUtil() {
 		super();
 	}
-	
+
 	/**
 	 * 폴더 구분자
 	 */
@@ -52,52 +53,52 @@ public class Spring4FileUtil {
 	 * 확장자 구분자
 	 */
 	private static final char EXTENSION_SEPARATOR = '.';
-	
+
 	public static class FileVO implements Serializable {
-		
+
 		private static final long serialVersionUID = 1L;
 
 		public FileVO() {
 			super();
 		}
-		
+
 		/**
 		 * 파일 경로
 		 */
 		public String destFilePath;
-		
+
 		/**
 		 * 파일 확장자
 		 */
 		public String fileExt;
-		
+
 		/**
 		 * 원파일명
 		 */
 		public String orignlFileNm;
-		
+
 		/**
 		 * 저장파일명
 		 */
 		public String saveFileNm;
-		
+
 		/**
 		 * 파일 크기
 		 */
 		public long fileSize;
-		
+
 		/**
 		 * 파일 크기 단위
 		 */
 		public String fileSizeUnits;
-		
+
 		public String toString() {
 			return ToStringBuilder.reflectionToString(
 				this, ToStringStyle.MULTI_LINE_STYLE
 			);
 		}
 	}
-	
+
 	/**
 	 * <pre>
 	 * Spring 4 파일 업로드
@@ -110,34 +111,34 @@ public class Spring4FileUtil {
 	 */
 	public static FileVO uploadFile(MultipartFile multipartFile, String destFilePath) {
 		destFilePath = (destFilePath.replaceAll("^(.*)(.$)", "$2").equals("/")) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
-		
+
 		Path destPath = Paths.get(destFilePath);
-		
+
 		if ( !destPath.toFile().exists() ) {
 			try {
 				Files.createDirectories(destPath);
-				
+
 			} catch (IOException e) {
 				logger.error("", e);
 			}
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
 		String fileExt = EXTENSION_SEPARATOR + InnerFileutils.getFileExtension(multipartFile.getOriginalFilename());
-		
+
 		sb.append( UUID.randomUUID().toString().replaceAll("-", "") ).append(fileExt);
 		String saveFileNm = sb.toString();
-		
+
 		sb.setLength(0);
 		sb.append(destFilePath).append(FOLDER_SEPARATOR).append(saveFileNm);
-		
+
 		FileVO fileVO = null;
-		
+
 		try {
 			byte[] bytes = multipartFile.getBytes();
             Path path = Paths.get(sb.toString());
             Files.write(path, bytes);
-			
+
 			fileVO = new FileVO();
 			fileVO.destFilePath = destFilePath;
 			fileVO.orignlFileNm = multipartFile.getOriginalFilename();
@@ -145,14 +146,14 @@ public class Spring4FileUtil {
 			fileVO.fileExt = fileExt;
 			fileVO.fileSize = multipartFile.getSize();
 			fileVO.fileSizeUnits = InnerFileutils.readableFileSize(fileVO.fileSize);
-			
+
 		} catch (IllegalStateException | IOException e) {
 			logger.error("", e);
 		}
-		
+
 		return fileVO;
 	}
-	
+
 	/**
 	 * Spring 4 파일 다운로드
 	 * @param fileVO
@@ -161,23 +162,23 @@ public class Spring4FileUtil {
 	 */
 	public static void downloadFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
 		String downloadlFileNm = "";
-		
+
 		String destFilePath = fileVO.destFilePath;
 		destFilePath = (destFilePath.replaceAll("^(.*)(.$)", "$2").equals("/")) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
-		
+
 		String saveFileNm = fileVO.saveFileNm;
 		String orignlFileNm = fileVO.orignlFileNm;
-		
+
 		if ( !StringUtils.hasText(orignlFileNm) ) {
 			downloadlFileNm = contentDisposition(request, saveFileNm);
 		} else {
 			downloadlFileNm = contentDisposition(request, orignlFileNm);
 		}
-		
-		response.setContentType("application/octet-stream");
+
+		response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
 		response.setHeader("Content-Transfer-Encoding", "binary;");
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + downloadlFileNm + "\";");
-		
+
 		Path source = Paths.get(destFilePath + saveFileNm);
 
 		try ( OutputStream os = response.getOutputStream() ) {
@@ -187,7 +188,41 @@ public class Spring4FileUtil {
 			logger.error("", e);
 		}
 	}
-	
+
+	/**
+	 * Spring 4 PDF 파일 열기
+	 * @param fileVO
+	 * @param request
+	 * @param response
+	 */
+	public static void openPdfFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
+		String downloadlFileNm = "";
+
+		String destFilePath = fileVO.destFilePath;
+		destFilePath = (destFilePath.replaceAll("^(.*)(.$)", "$2").equals("/")) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
+
+		String saveFileNm = fileVO.saveFileNm;
+		String orignlFileNm = fileVO.orignlFileNm;
+
+		if ( !StringUtils.hasText(orignlFileNm) ) {
+			downloadlFileNm = contentDisposition(request, saveFileNm);
+		} else {
+			downloadlFileNm = contentDisposition(request, orignlFileNm);
+		}
+
+		response.setContentType(MediaType.APPLICATION_PDF_VALUE);
+		response.setHeader("Content-Disposition", "inline; attachment; filename=\"" + downloadlFileNm + "\";");
+
+		Path source = Paths.get(destFilePath + saveFileNm);
+
+		try ( OutputStream os = response.getOutputStream() ) {
+			Files.copy(source, os);
+
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+	}
+
 	/**
 	 * Spring MultipartFile -> Java File 변환
 	 * @param multipart
@@ -195,17 +230,17 @@ public class Spring4FileUtil {
 	 */
 	public static File multipartFileToFile(MultipartFile multipartFile) {
 		File convFile = new File(multipartFile.getOriginalFilename());
-		
+
 		try {
 			multipartFile.transferTo(convFile);
-			
+
 		} catch (IllegalStateException | IOException e) {
 			logger.error("", e);
 		}
-		
+
         return convFile;
 	}
-	
+
 	/**
 	 * <pre>
 	 * 브라우저에 따른 인코딩 설정
@@ -218,25 +253,25 @@ public class Spring4FileUtil {
 	public static String contentDisposition(HttpServletRequest request, String str) {
 		String sRes = "";
 		String userAgent = request.getHeader("User-Agent");
-		
+
 		try {
 			if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
 				sRes = URLEncoder.encode(str, StandardCharsets.UTF_8.toString()).replaceAll("\\+", " ");
 			} else {
 				sRes = new String(str.getBytes(StandardCharsets.UTF_8.toString()), "ISO-8859-1");
 			}
-			
+
 		} catch (Exception e) {
 			logger.error("", e);
 		}
-		
+
 		return sRes;
 	}
-	
+
 	private static class InnerFileutils implements Serializable {
-			
+
 		private static final long serialVersionUID = 1L;
-	
+
 		/**
 		 * 파일 확장자 구하기
 		 * @param fileName
@@ -249,7 +284,7 @@ public class Spring4FileUtil {
 			int pos = fileName.lastIndexOf(EXTENSION_SEPARATOR);
 			return fileName.substring(pos + 1);
 		}
-		
+
 		/**
 		 * <pre>
 		 * 파일 용량 구하기
@@ -266,5 +301,5 @@ public class Spring4FileUtil {
 		    return new DecimalFormat("#,##0.#").format(fileSize/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
 		}
 	}
-	
+
 }
