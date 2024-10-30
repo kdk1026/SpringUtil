@@ -35,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
  * <pre>
  * 업로드 시, 의존성 라이브러리 필요 하다는게 단점
  * 익숙하단게 장점
+ * Boot 프로젝트 생성 시, 의존성 라이브러리 자동으로 가지고옴
  * </pre>
  * @author 김대광
  */
@@ -104,7 +105,7 @@ public class Spring3FileUtil {
 	/**
 	 * <pre>
 	 * Spring 3 파일 업로드
-	 *  - Apache Commons FileUpload 필요
+	 *  - Apache Commons IO 필요
 	 *  - 파일 업로드 전 파일 확장자 및 MIME Type 체크 진행할 것
 	 * </pre>
 	 * @param multipartFile
