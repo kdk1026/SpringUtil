@@ -1,7 +1,9 @@
-/**
- * Gradle Version 7.2
- *   - Window > Preferences > Gradle > Specific Gradle version
- */
+ /*
+	프로젝트 우클릭 > Properties > Gradle
+		Override workspace settings 체크
+			Specific Gradle version : 7.2
+			Java home
+*/
 plugins {
 	id 'org.springframework.boot' version '2.5.3'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
@@ -27,33 +29,33 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	
+
 	// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
 	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
-	
+
 	// https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload
 	implementation 'commons-fileupload:commons-fileupload:1.4'
-	
+
 	// https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-configuration-processor
 	implementation 'org.springframework.boot:spring-boot-configuration-processor'
 
-	// spring-oxm	
+	// spring-oxm
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web-services
 	implementation 'org.springframework.boot:spring-boot-starter-web-services:2.5.3'
-	
-	
+
+
 	// Gradle이 예전 버전이라 그런지 디펜더시가 안된다...
 	// 일단 프로젝트 빌드 패스에 CommonJava8 프로젝트 추가해서 사용...
 	// 플젝도 아니고, 개인 참고용이니 대충 쓸려고 했는데, 실행할 때 오류 작살....이런 옘병...
 	//implementation group: 'kdk', name: 'CommonJava8', version: '0.2'
-	
+
 	// https://mvnrepository.com/artifact/org.projectlombok/lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	
+
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
