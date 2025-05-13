@@ -120,7 +120,6 @@ public class Spring4FileUtil {
 
 			} catch (IOException e) {
 				logger.error("", e);
-				throw new RuntimeException(e);
 			}
 		}
 
@@ -150,7 +149,6 @@ public class Spring4FileUtil {
 
 		} catch (IllegalStateException | IOException e) {
 			logger.error("", e);
-			throw new RuntimeException(e);
 		}
 
 		return fileVO;
@@ -188,7 +186,6 @@ public class Spring4FileUtil {
 
 		} catch (Exception e) {
 			logger.error("", e);
-			throw new RuntimeException(e);
 		}
 	}
 
@@ -223,7 +220,6 @@ public class Spring4FileUtil {
 
 		} catch (Exception e) {
 			logger.error("", e);
-			throw new RuntimeException(e);
 		}
 	}
 
@@ -240,7 +236,6 @@ public class Spring4FileUtil {
 
 		} catch (IllegalStateException | IOException e) {
 			logger.error("", e);
-			throw new RuntimeException(e);
 		}
 
         return convFile;
@@ -268,7 +263,6 @@ public class Spring4FileUtil {
 
 		} catch (Exception e) {
 			logger.error("", e);
-			throw new RuntimeException(e);
 		}
 
 		return sRes;

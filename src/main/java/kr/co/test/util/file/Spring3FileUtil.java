@@ -144,7 +144,6 @@ public class Spring3FileUtil {
 
 		} catch (IllegalStateException | IOException e) {
 			logger.error("", e);
-			throw new RuntimeException(e);
 		}
 
 		return fileVO;
@@ -183,10 +182,8 @@ public class Spring3FileUtil {
 			FileCopyUtils.copy(is, os);
 		} catch (FileNotFoundException e) {
 			logger.error("", e);
-			throw new RuntimeException(e);
 		} catch (IOException e) {
 			logger.error("", e);
-			throw new RuntimeException(e);
 		}
 	}
 
@@ -222,10 +219,8 @@ public class Spring3FileUtil {
 			FileCopyUtils.copy(is, os);
 		} catch (FileNotFoundException e) {
 			logger.error("", e);
-			throw new RuntimeException(e);
 		} catch (IOException e) {
 			logger.error("", e);
-			throw new RuntimeException(e);
 		}
 	}
 
@@ -251,7 +246,6 @@ public class Spring3FileUtil {
 
 		} catch (Exception e) {
 			logger.error("", e);
-			throw new RuntimeException(e);
 		}
 
 		return sRes;
