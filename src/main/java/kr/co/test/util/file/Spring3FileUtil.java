@@ -142,10 +142,9 @@ public class Spring3FileUtil {
 			fileVO.fileSize = multipartFile.getSize();
 			fileVO.fileSizeUnits = InnerFileutils.readableFileSize(fileVO.fileSize);
 
-		} catch (IllegalStateException e) {
+		} catch (IllegalStateException | IOException e) {
 			logger.error("", e);
-		} catch (IOException e) {
-			logger.error("", e);
+			throw new RuntimeException(e);
 		}
 
 		return fileVO;
@@ -176,29 +175,18 @@ public class Spring3FileUtil {
 		response.setHeader("Content-Transfer-Encoding", "binary;");
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + downloadlFileNm + "\";");
 
-		FileInputStream fis = null;
-		InputStream is = null;
-		OutputStream os = null;
-
-		try {
-			fis = new FileInputStream(destFilePath + saveFileNm);
-			is = new BufferedInputStream(fis);
-			os = response.getOutputStream();
-
+		try (
+				FileInputStream fis = new FileInputStream(destFilePath + saveFileNm);
+				InputStream is = new BufferedInputStream(fis);
+				OutputStream os = response.getOutputStream();
+        ) {
 			FileCopyUtils.copy(is, os);
-
 		} catch (FileNotFoundException e) {
 			logger.error("", e);
+			throw new RuntimeException(e);
 		} catch (IOException e) {
 			logger.error("", e);
-		} finally {
-			if (fis != null) {
-				try {
-					fis.close();
-				} catch (IOException e) {
-					logger.error("", e);
-				}
-			}
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -226,29 +214,18 @@ public class Spring3FileUtil {
 		response.setContentType(MediaType.APPLICATION_PDF_VALUE);
 		response.setHeader("Content-Disposition", "inline; attachment; filename=\"" + downloadlFileNm + "\";");
 
-		FileInputStream fis = null;
-		InputStream is = null;
-		OutputStream os = null;
-
-		try {
-			fis = new FileInputStream(destFilePath + saveFileNm);
-			is = new BufferedInputStream(fis);
-			os = response.getOutputStream();
-
+		try (
+				FileInputStream fis = new FileInputStream(destFilePath + saveFileNm);
+				InputStream is = new BufferedInputStream(fis);
+				OutputStream os = response.getOutputStream();
+        ) {
 			FileCopyUtils.copy(is, os);
-
 		} catch (FileNotFoundException e) {
 			logger.error("", e);
+			throw new RuntimeException(e);
 		} catch (IOException e) {
 			logger.error("", e);
-		} finally {
-			if (fis != null) {
-				try {
-					fis.close();
-				} catch (IOException e) {
-					logger.error("", e);
-				}
-			}
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -274,6 +251,7 @@ public class Spring3FileUtil {
 
 		} catch (Exception e) {
 			logger.error("", e);
+			throw new RuntimeException(e);
 		}
 
 		return sRes;
