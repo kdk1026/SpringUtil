@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 개정이력
  * -----------------------------------
  * 2019. 4. 27. 김대광	최초작성
+ * 2025. 5. 18. 김대광	AI가 추천한 Singleton 패턴으로 변경
  * </pre>
  *
  * <pre>
@@ -53,13 +54,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class RestTemplateUtil {
 
+	private static RestTemplate instance;
+
 	private RestTemplateUtil() {
 		super();
 	}
 
 	private static class Config {
-		private static boolean isSSL;
-
 		private static class HttpClientConfig {
 			private static final int TIMEOUT = 5000;
 
@@ -176,22 +177,16 @@ public class RestTemplateUtil {
 	}
 
 	/**
-	 * LazyHolder Singleton 패턴
-	 *
-	 * @return
-	 */
-	private static class LazyHolder {
-		private static final RestTemplate INSTANCE = new RestTemplate(Config.HttpRequestFactory.getRequestFactory(Config.isSSL));
-	}
-
-	/**
 	 * Singleton 인스턴스 생성
 	 *
 	 * @return
 	 */
-	private static RestTemplate getInstance(boolean isSSL) {
-		Config.isSSL = isSSL;
-		return LazyHolder.INSTANCE;
+	private static synchronized RestTemplate getInstance(boolean isSSL) {
+		if (instance == null) {
+			instance = new RestTemplate(Config.HttpRequestFactory.getRequestFactory(isSSL));
+		}
+
+		return instance;
 	}
 
 	@SuppressWarnings("unchecked")

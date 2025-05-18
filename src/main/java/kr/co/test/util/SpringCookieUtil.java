@@ -11,7 +11,8 @@ import org.springframework.util.StringUtils;
  * -----------------------------------
  * 개정이력
  * -----------------------------------
- * 2024. 7. 3. kdk	최초작성
+ * 2024. 7. 3.  kdk	 	최초작성
+ * 2025. 5. 18. 김대광	AI가 추천한 Singleton 패턴으로 변경
  * </pre>
  *
  * <pre>
@@ -23,16 +24,18 @@ import org.springframework.util.StringUtils;
  */
 public class SpringCookieUtil {
 
+	private static SpringCookieUtil instance;
+
 	private SpringCookieUtil() {
 		super();
 	}
 
-	private static class LazyHolder {
-		private static final SpringCookieUtil INSTANCE = new SpringCookieUtil();
-	}
+	public static synchronized SpringCookieUtil getInstance() {
+		if (instance == null) {
+			instance = new SpringCookieUtil();
+		}
 
-	public static SpringCookieUtil getInstance() {
-		return LazyHolder.INSTANCE;
+		return instance;
 	}
 
 	/**

@@ -15,12 +15,15 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * -----------------------------------
  * 2021. 7. 30. 김대광	최초작성
  * 2021. 8. 19. 김대광	SonarLint 지시에 따른 수정
+ * 2025. 5. 18. 김대광	AI가 추천한 Singleton 패턴으로 변경
  * </pre>
- * 
+ *
  * @see <a href="https://offbyone.tistory.com/144">Ref</a>
  * @author 김대광
  */
 public class ContextUtil {
+
+	private static ContextUtil instance;
 
 	/**
 	 * 외부에서 객체 인스턴스화 불가
@@ -29,12 +32,12 @@ public class ContextUtil {
 		super();
 	}
 
-	private static class LazyHolder {
-		private static final ContextUtil INSTANCE = new ContextUtil();
-	}
+	public static synchronized ContextUtil getInstance() {
+		if (instance == null) {
+			instance = new ContextUtil();
+		}
 
-	public static ContextUtil getInstance() {
-		return LazyHolder.INSTANCE;
+		return instance;
 	}
 
 	/**
