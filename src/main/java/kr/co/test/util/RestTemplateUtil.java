@@ -64,15 +64,15 @@ public class RestTemplateUtil {
 
 		public static synchronized RestTemplate getRestTemplate(boolean isSsl) {
 			if (isSsl) {
-				if (insecureRestTemplate == null) {
-					insecureRestTemplate = new RestTemplate(HttpRequestFactory.getRequestFactory(true));
-				}
-				return insecureRestTemplate;
-			} else {
 				if (secureRestTemplate == null) {
-					secureRestTemplate =  new RestTemplate(HttpRequestFactory.getRequestFactory(false));
+					secureRestTemplate = new RestTemplate(HttpRequestFactory.getRequestFactory(true));
 				}
 				return secureRestTemplate;
+			} else {
+				if (insecureRestTemplate == null) {
+					insecureRestTemplate =  new RestTemplate(HttpRequestFactory.getRequestFactory(false));
+				}
+				return insecureRestTemplate;
 			}
 		}
 	}
@@ -94,24 +94,24 @@ public class RestTemplateUtil {
 
         public static synchronized CloseableHttpClient getHttpClient(boolean isSsl) {
         	if (isSsl) {
-        		if (insecureHttpClient == null) {
-					insecureHttpClient = HttpClients.custom()
+        		if (secureHttpClient == null) {
+        			secureHttpClient = HttpClients.custom()
 							.setDefaultRequestConfig(Config.REQUEST_CONFIG)
 							.setSSLHostnameVerifier(new NoopHostnameVerifier())
 							.setMaxConnTotal(100)
 							.setMaxConnPerRoute(5)
 							.build();
         		}
-        		return insecureHttpClient;
+        		return secureHttpClient;
         	} else {
-        		if (secureHttpClient == null) {
-					secureHttpClient = HttpClientBuilder.create()
+        		if (insecureHttpClient == null) {
+        			insecureHttpClient = HttpClientBuilder.create()
 							.setDefaultRequestConfig(Config.REQUEST_CONFIG)
 							.setMaxConnTotal(100)
 							.setMaxConnPerRoute(5)
 							.build();
         		}
-        		return secureHttpClient;
+        		return insecureHttpClient;
         	}
         }
 	}
