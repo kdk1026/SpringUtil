@@ -2,7 +2,6 @@ package kr.co.test.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * -----------------------------------
  * 2019. 4. 27. 김대광	최초작성
  * 2025. 5. 18. 김대광	AI가 추천한 Singleton 패턴으로 변경
+ * 2025. 5. 22. 김대광	AI에게 검토 요청해서 개선
  * </pre>
  *
  * <pre>
@@ -54,64 +54,82 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class RestTemplateUtil {
 
-	private static RestTemplate instance;
-
 	private RestTemplateUtil() {
 		super();
 	}
 
-	private static class Config {
-		private static class HttpClientConfig {
-			private static final int TIMEOUT = 5000;
+	private static class RestTemplateProvider {
+		private static RestTemplate secureRestTemplate;
+		private static RestTemplate insecureRestTemplate;
 
-			private static final RequestConfig config =
-					RequestConfig.custom()
-					.setConnectTimeout(TIMEOUT)
-					.setConnectionRequestTimeout(TIMEOUT)
-					.setSocketTimeout(TIMEOUT)
-					.build();
+		public static synchronized RestTemplate getRestTemplate(boolean isSsl) {
+			if (isSsl) {
+				if (insecureRestTemplate == null) {
+					insecureRestTemplate = new RestTemplate(HttpRequestFactory.getRequestFactory(true));
+				}
+				return insecureRestTemplate;
+			} else {
+				if (secureRestTemplate == null) {
+					secureRestTemplate =  new RestTemplate(HttpRequestFactory.getRequestFactory(false));
+				}
+				return secureRestTemplate;
+			}
 		}
+	}
 
-		private static class HttpClientInstance {
-			private static CloseableHttpClient getHttpClient(boolean isSSL) {
-				CloseableHttpClient httpClient = null;
+	private static class Config {
+		private static final int TIMEOUT = 5000;
 
-				/*
-				 * connection pool 적용
-				 *  - setMaxConnTotal		: 오픈되는 최대 커넥션 수 제한
-				 *  - setMaxConnPerRoute	: IP, 포트 1쌍에 대해 수행 할 연결 수 제한
-				 */
+		private static final RequestConfig REQUEST_CONFIG =
+				RequestConfig.custom()
+				.setConnectTimeout(TIMEOUT)
+				.setConnectionRequestTimeout(TIMEOUT)
+				.setSocketTimeout(TIMEOUT)
+				.build();
+	}
 
-				if (isSSL) {
-					httpClient = HttpClients.custom()
-						.setDefaultRequestConfig(HttpClientConfig.config)
-						.setSSLHostnameVerifier(new NoopHostnameVerifier())
-						.setMaxConnTotal(100)
-						.setMaxConnPerRoute(5)
-						.build();
-				} else {
-					httpClient = HttpClientBuilder.create()
-							.setDefaultRequestConfig(HttpClientConfig.config)
+	private static class HttpClientProvider {
+		private static CloseableHttpClient secureHttpClient;
+        private static CloseableHttpClient insecureHttpClient;
+
+        public static synchronized CloseableHttpClient getHttpClient(boolean isSsl) {
+        	if (isSsl) {
+        		if (insecureHttpClient == null) {
+					insecureHttpClient = HttpClients.custom()
+							.setDefaultRequestConfig(Config.REQUEST_CONFIG)
+							.setSSLHostnameVerifier(new NoopHostnameVerifier())
 							.setMaxConnTotal(100)
 							.setMaxConnPerRoute(5)
 							.build();
-				}
+        		}
+        		return insecureHttpClient;
+        	} else {
+        		if (secureHttpClient == null) {
+					secureHttpClient = HttpClientBuilder.create()
+							.setDefaultRequestConfig(Config.REQUEST_CONFIG)
+							.setMaxConnTotal(100)
+							.setMaxConnPerRoute(5)
+							.build();
+        		}
+        		return secureHttpClient;
+        	}
+        }
+	}
 
-				return httpClient;
-			}
+	private static class HttpRequestFactory {
+		private static HttpComponentsClientHttpRequestFactory getRequestFactory(boolean isSsl) {
+			return new HttpComponentsClientHttpRequestFactory(HttpClientProvider.getHttpClient(isSsl));
 		}
+	}
 
-		private static class HttpRequestFactory {
-			private static HttpComponentsClientHttpRequestFactory getRequestFactory(boolean isSSL) {
-				return new HttpComponentsClientHttpRequestFactory(HttpClientInstance.getHttpClient(isSSL));
-			}
-		}
+	private static RestTemplate getRestTemplate(boolean isSsl) {
+		return RestTemplateProvider.getRestTemplate(isSsl);
 	}
 
 	private static class Convert {
 		@SuppressWarnings("unchecked")
 		private static Map<String, Object> objectToMap(Object obj) {
-			Map<String, Object> map = new HashMap<>();
+			Map<String, Object> map = null;
 
 			ObjectMapper oMapper = new ObjectMapper();
 			map = oMapper.convertValue(obj, Map.class);
@@ -122,8 +140,9 @@ public class RestTemplateUtil {
 		private static MultiValueMap<String, String> mapToHttpHeaders(Map<String, Object> headerMap, HttpHeaders headers) {
 			MultiValueMap<String, String> mMap = new LinkedMultiValueMap<>();
 
-			if ( headers.getContentType() != null ) {
-				mMap.add(HttpHeaders.CONTENT_TYPE, headers.getContentType().toString());
+			MediaType mediaType = headers.getContentType();
+			if ( mediaType != null ) {
+				mMap.add(HttpHeaders.CONTENT_TYPE, mediaType.toString());
 			}
 
 			if ( headerMap != null ) {
@@ -176,24 +195,11 @@ public class RestTemplateUtil {
 		}
 	}
 
-	/**
-	 * Singleton 인스턴스 생성
-	 *
-	 * @return
-	 */
-	private static synchronized RestTemplate getInstance(boolean isSSL) {
-		if (instance == null) {
-			instance = new RestTemplate(Config.HttpRequestFactory.getRequestFactory(isSSL));
-		}
-
-		return instance;
-	}
-
 	@SuppressWarnings("unchecked")
 	public static ResponseEntity<Object> get(boolean isSSL, String url, MediaType mediaType
 			, Map<String, Object> headerMap, Class<?> responseType, Object... uriVariables) {
 
-		RestTemplate restTemplate = RestTemplateUtil.getInstance(isSSL);
+		RestTemplate restTemplate = RestTemplateUtil.getRestTemplate(isSSL);
 
 		HttpHeaders httpHeaders = new HttpHeaders();
 		if (mediaType != null) {
@@ -222,7 +228,7 @@ public class RestTemplateUtil {
 	public static ResponseEntity<Object> post(boolean isSSL, String url, MediaType mediaType
 			, Map<String, Object> headerMap, Map<String, Object> bodyMap, Class<?> responseType, Object... uriVariables) throws IOException {
 
-		RestTemplate restTemplate = RestTemplateUtil.getInstance(isSSL);
+		RestTemplate restTemplate = RestTemplateUtil.getRestTemplate(isSSL);
 
 		HttpHeaders httpHeaders = new HttpHeaders();
 		if (mediaType != null) {
