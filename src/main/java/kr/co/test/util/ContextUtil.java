@@ -21,6 +21,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * </pre>
  *
  * @see <a href="https://offbyone.tistory.com/144">Ref</a>
+ * @see <a href="https://github.com/kdk1026/BaseApi/blob/master/src/main/java/com/kdk/app/common/util/spring/ContextUtil.java">Boot 3.x 참고</a>
  * @author 김대광
  */
 public class ContextUtil {

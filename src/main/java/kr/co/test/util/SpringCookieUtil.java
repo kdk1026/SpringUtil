@@ -20,6 +20,8 @@ import org.springframework.util.StringUtils;
  *   - 5.1 부터는 사용 빈도는 적으나 sameSite 설정 가능
  *   - <a href="https://cherish-it.tistory.com/12">sameSite 참고</a>
  * </pre>
+ *
+ * @see <a href="https://github.com/kdk1026/BaseApi/blob/master/src/main/java/com/kdk/app/common/util/spring/SpringCookieUtil.java">Boot 3.x 참고</a>
  * @author kdk
  */
 public class SpringCookieUtil {
