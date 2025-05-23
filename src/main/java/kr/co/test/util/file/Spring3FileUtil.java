@@ -184,7 +184,7 @@ public class Spring3FileUtil {
 		String saveFileNm = fileVO.saveFileNm;
 		String orignlFileNm = fileVO.orignlFileNm;
 
-		if ( !!StringUtils.hasText(orignlFileNm) ) {
+		if ( !StringUtils.hasText(orignlFileNm) ) {
 			downloadlFileNm = contentDisposition(request, saveFileNm);
 		} else {
 			downloadlFileNm = contentDisposition(request, orignlFileNm);
@@ -232,7 +232,7 @@ public class Spring3FileUtil {
 		String saveFileNm = fileVO.saveFileNm;
 		String orignlFileNm = fileVO.orignlFileNm;
 
-		if ( !!StringUtils.hasText(orignlFileNm) ) {
+		if ( !StringUtils.hasText(orignlFileNm) ) {
 			downloadlFileNm = contentDisposition(request, saveFileNm);
 		} else {
 			downloadlFileNm = contentDisposition(request, orignlFileNm);
