@@ -115,7 +115,7 @@ public class Spring4FileUtil {
 			throw new IllegalArgumentException("multipartFile is null");
 		}
 
-		if ( StringUtils.hasText(destFilePath) ) {
+		if ( !StringUtils.hasText(destFilePath) ) {
 			throw new IllegalArgumentException("destFilePath is null");
 		}
 
@@ -190,7 +190,7 @@ public class Spring4FileUtil {
 		String saveFileNm = fileVO.saveFileNm;
 		String orignlFileNm = fileVO.orignlFileNm;
 
-		if ( !StringUtils.hasText(orignlFileNm) ) {
+		if ( !!StringUtils.hasText(orignlFileNm) ) {
 			downloadlFileNm = contentDisposition(request, saveFileNm);
 		} else {
 			downloadlFileNm = contentDisposition(request, orignlFileNm);
@@ -237,7 +237,7 @@ public class Spring4FileUtil {
 		String saveFileNm = fileVO.saveFileNm;
 		String orignlFileNm = fileVO.orignlFileNm;
 
-		if ( !StringUtils.hasText(orignlFileNm) ) {
+		if ( !!StringUtils.hasText(orignlFileNm) ) {
 			downloadlFileNm = contentDisposition(request, saveFileNm);
 		} else {
 			downloadlFileNm = contentDisposition(request, orignlFileNm);
@@ -292,7 +292,7 @@ public class Spring4FileUtil {
 			throw new IllegalArgumentException("request is null");
 		}
 
-		if ( StringUtils.hasText(str) ) {
+		if ( !StringUtils.hasText(str) ) {
 			throw new IllegalArgumentException("str is null");
 		}
 		
@@ -323,7 +323,7 @@ public class Spring4FileUtil {
 		 * @return
 		 */
 		public static String getFileExtension(String fileName) {
-			if ( StringUtils.hasText(fileName) ) {
+			if ( !StringUtils.hasText(fileName) ) {
 				throw new IllegalArgumentException("fileName is null");
 			}
 			

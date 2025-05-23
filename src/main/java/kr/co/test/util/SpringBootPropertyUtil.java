@@ -26,7 +26,7 @@ public class SpringBootPropertyUtil {
 	}
 
 	public static String getProperty(String propertyName, String defaultValue) {
-		if ( StringUtils.hasText(propertyName) ) {
+		if ( !StringUtils.hasText(propertyName) ) {
 			throw new IllegalStateException("propertyName is null");
 		}
 

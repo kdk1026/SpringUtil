@@ -58,7 +58,7 @@ public class SpringSessionUtil {
 
 
 	public static void setSessionAttribute(String sKey, Object obj) {
-		if ( StringUtils.hasText(sKey) ) {
+		if ( !StringUtils.hasText(sKey) ) {
 			throw new IllegalArgumentException("sKey is null");
 		}
 
@@ -74,7 +74,7 @@ public class SpringSessionUtil {
 	}
 
 	public static void setSessionAttribute(String sKey, Object obj, int nSecond) {
-		if ( StringUtils.hasText(sKey) ) {
+		if ( !StringUtils.hasText(sKey) ) {
 			throw new IllegalArgumentException("sKey is null");
 		}
 
@@ -96,7 +96,7 @@ public class SpringSessionUtil {
 	}
 
 	public static Object getSessionAttribute(String sKey) {
-		if ( StringUtils.hasText(sKey) ) {
+		if ( !StringUtils.hasText(sKey) ) {
 			throw new IllegalArgumentException("sKey is null");
 		}
 

@@ -53,11 +53,11 @@ public class SpringCookieUtil {
 			throw new IllegalArgumentException("response is null");
 		}
 
-		if ( StringUtils.hasText(name) ) {
+		if ( !StringUtils.hasText(name) ) {
 			throw new IllegalArgumentException("name is null");
 		}
 
-		if ( StringUtils.hasText(value) ) {
+		if ( !StringUtils.hasText(value) ) {
 			throw new IllegalArgumentException("value is null");
 		}
 
