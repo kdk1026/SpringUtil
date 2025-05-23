@@ -3,6 +3,7 @@ package kr.co.test.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.StringUtils;
 
 import kr.co.test.component.ApplicationContextServe;
 
@@ -12,7 +13,7 @@ import kr.co.test.component.ApplicationContextServe;
  * -----------------------------------
  * 2021. 8. 6. 김대광	최초작성
  * </pre>
- * 
+ *
  * ApplicationContextServe @Component 필요
  * @author 김대광
  */
@@ -25,17 +26,23 @@ public class SpringBootPropertyUtil {
 	}
 
 	public static String getProperty(String propertyName, String defaultValue) {
-		String value = defaultValue;
+		if ( StringUtils.hasText(propertyName) ) {
+			throw new IllegalStateException("propertyName is null");
+		}
+
+		String value = "";
 
 		ApplicationContext applicationContext = ApplicationContextServe.getContext();
 
-		if ( applicationContext.getEnvironment().getProperty(propertyName) == null ) {
-			logger.warn(propertyName + " properties was not loaded.");
+		String property = applicationContext.getEnvironment().getProperty(propertyName);
+		if ( property == null ) {
+			logger.warn("{} properties was not loaded.", propertyName);
+			value = defaultValue;
 		} else {
-			value = applicationContext.getEnvironment().getProperty(propertyName).toString().trim();
+			value = property.trim();
 		}
 
 		return value;
 	}
-	
+
 }

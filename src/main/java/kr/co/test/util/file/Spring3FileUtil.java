@@ -3,7 +3,6 @@ package kr.co.test.util.file;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -113,6 +113,14 @@ public class Spring3FileUtil {
 	 * @return
 	 */
 	public static FileVO uploadFile(MultipartFile multipartFile, String destFilePath) {
+		if ( multipartFile == null ) {
+			throw new IllegalArgumentException("multipartFile is null");
+		}
+
+		if ( StringUtils.hasText(destFilePath) ) {
+			throw new IllegalArgumentException("destFilePath is null");
+		}
+
 		destFilePath = (destFilePath.replaceAll("^(.*)(.$)", "$2").equals("/")) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
 		File destFile = new File(destFilePath);
 		if (!destFile.exists()) {
@@ -156,6 +164,18 @@ public class Spring3FileUtil {
 	 * @param response
 	 */
 	public static void downloadFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
+		if ( ObjectUtils.isEmpty(fileVO) ) {
+			throw new IllegalArgumentException("fileVO is null");
+		}
+
+		if ( request == null ) {
+			throw new IllegalArgumentException("request is null");
+		}
+
+		if ( response == null ) {
+			throw new IllegalArgumentException("response is null");
+		}
+
 		String downloadlFileNm = "";
 
 		String destFilePath = fileVO.destFilePath;
@@ -180,9 +200,7 @@ public class Spring3FileUtil {
 				OutputStream os = response.getOutputStream();
         ) {
 			FileCopyUtils.copy(is, os);
-		} catch (FileNotFoundException e) {
-			logger.error("", e);
-		} catch (IOException e) {
+		} catch (IllegalStateException | IOException e) {
 			logger.error("", e);
 		}
 	}
@@ -194,6 +212,18 @@ public class Spring3FileUtil {
 	 * @param response
 	 */
 	public static void openPdfFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
+		if ( ObjectUtils.isEmpty(fileVO) ) {
+			throw new IllegalArgumentException("fileVO is null");
+		}
+
+		if ( request == null ) {
+			throw new IllegalArgumentException("request is null");
+		}
+
+		if ( response == null ) {
+			throw new IllegalArgumentException("response is null");
+		}
+
 		String downloadlFileNm = "";
 
 		String destFilePath = fileVO.destFilePath;
@@ -217,9 +247,7 @@ public class Spring3FileUtil {
 				OutputStream os = response.getOutputStream();
         ) {
 			FileCopyUtils.copy(is, os);
-		} catch (FileNotFoundException e) {
-			logger.error("", e);
-		} catch (IOException e) {
+		}  catch (IllegalStateException | IOException e) {
 			logger.error("", e);
 		}
 	}
@@ -234,6 +262,14 @@ public class Spring3FileUtil {
 	 * @return
 	 */
 	public static String contentDisposition(HttpServletRequest request, String str) {
+		if ( request == null ) {
+			throw new IllegalArgumentException("request is null");
+		}
+
+		if ( StringUtils.hasText(str) ) {
+			throw new IllegalArgumentException("str is null");
+		}
+
 		String sRes = "";
 		String userAgent = request.getHeader("User-Agent");
 
@@ -261,6 +297,10 @@ public class Spring3FileUtil {
 		 * @return
 		 */
 		public static String getFileExtension(String fileName) {
+			if ( StringUtils.hasText(fileName) ) {
+				throw new IllegalArgumentException("fileName is null");
+			}
+
 			if (fileName.lastIndexOf(EXTENSION_SEPARATOR) == -1) {
 				return null;
 			}
@@ -277,11 +317,17 @@ public class Spring3FileUtil {
 		 * @return
 		 */
 		public static String readableFileSize(long fileSize) {
-			if (fileSize <= 0) return "0";
+			final DecimalFormat decimalFormat = new DecimalFormat("#,##0.#");
+
+			if (fileSize < 0) {
+				throw new IllegalArgumentException("fileSize is invalid");
+			}
+
+			if (fileSize == 0) return "0 B";
 			String[] units = { "B", "KB", "MB", "GB", "TB" };
 
-		    int digitGroups = (int) (Math.log10(fileSize)/Math.log10(1024));
-		    return new DecimalFormat("#,##0.#").format(fileSize/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+			int digitGroups = Math.min((int) (Math.log10(fileSize) / Math.log10(1024)), units.length - 1);
+		    return decimalFormat.format(fileSize/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
 		}
 	}
 

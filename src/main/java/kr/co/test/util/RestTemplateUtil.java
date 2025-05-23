@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -199,6 +200,14 @@ public class RestTemplateUtil {
 	public static ResponseEntity<Object> get(boolean isSSL, String url, MediaType mediaType
 			, Map<String, Object> headerMap, Class<?> responseType, Object... uriVariables) {
 
+		if ( StringUtils.hasLength(url) ) {
+			throw new IllegalArgumentException("url is null");
+		}
+
+		if ( responseType == null ) {
+			throw new IllegalArgumentException("responseType is null");
+		}
+
 		RestTemplate restTemplate = RestTemplateUtil.getRestTemplate(isSSL);
 
 		HttpHeaders httpHeaders = new HttpHeaders();
@@ -227,6 +236,14 @@ public class RestTemplateUtil {
 	@SuppressWarnings("unchecked")
 	public static ResponseEntity<Object> post(boolean isSSL, String url, MediaType mediaType
 			, Map<String, Object> headerMap, Map<String, Object> bodyMap, Class<?> responseType, Object... uriVariables) throws IOException {
+
+		if ( StringUtils.hasLength(url) ) {
+			throw new IllegalArgumentException("url is null");
+		}
+
+		if ( responseType == null ) {
+			throw new IllegalArgumentException("responseType is null");
+		}
 
 		RestTemplate restTemplate = RestTemplateUtil.getRestTemplate(isSSL);
 

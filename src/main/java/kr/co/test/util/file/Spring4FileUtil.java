@@ -20,6 +20,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -110,6 +111,14 @@ public class Spring4FileUtil {
 	 * @return
 	 */
 	public static FileVO uploadFile(MultipartFile multipartFile, String destFilePath) {
+		if ( multipartFile == null ) {
+			throw new IllegalArgumentException("multipartFile is null");
+		}
+
+		if ( StringUtils.hasText(destFilePath) ) {
+			throw new IllegalArgumentException("destFilePath is null");
+		}
+
 		destFilePath = (destFilePath.replaceAll("^(.*)(.$)", "$2").equals("/")) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
 
 		Path destPath = Paths.get(destFilePath);
@@ -161,6 +170,18 @@ public class Spring4FileUtil {
 	 * @param response
 	 */
 	public static void downloadFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
+		if ( ObjectUtils.isEmpty(fileVO) ) {
+			throw new IllegalArgumentException("fileVO is null");
+		}
+
+		if ( request == null ) {
+			throw new IllegalArgumentException("request is null");
+		}
+
+		if ( response == null ) {
+			throw new IllegalArgumentException("response is null");
+		}
+
 		String downloadlFileNm = "";
 
 		String destFilePath = fileVO.destFilePath;
@@ -196,6 +217,18 @@ public class Spring4FileUtil {
 	 * @param response
 	 */
 	public static void openPdfFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
+		if ( ObjectUtils.isEmpty(fileVO) ) {
+			throw new IllegalArgumentException("fileVO is null");
+		}
+
+		if ( request == null ) {
+			throw new IllegalArgumentException("request is null");
+		}
+
+		if ( response == null ) {
+			throw new IllegalArgumentException("response is null");
+		}
+
 		String downloadlFileNm = "";
 
 		String destFilePath = fileVO.destFilePath;
@@ -229,6 +262,10 @@ public class Spring4FileUtil {
 	 * @return
 	 */
 	public static File multipartFileToFile(MultipartFile multipartFile) {
+		if ( multipartFile == null ) {
+			throw new IllegalArgumentException("multipartFile is null");
+		}
+
 		File convFile = new File(multipartFile.getOriginalFilename());
 
 		try {
@@ -251,6 +288,14 @@ public class Spring4FileUtil {
 	 * @return
 	 */
 	public static String contentDisposition(HttpServletRequest request, String str) {
+		if ( request == null ) {
+			throw new IllegalArgumentException("request is null");
+		}
+
+		if ( StringUtils.hasText(str) ) {
+			throw new IllegalArgumentException("str is null");
+		}
+		
 		String sRes = "";
 		String userAgent = request.getHeader("User-Agent");
 
@@ -278,6 +323,10 @@ public class Spring4FileUtil {
 		 * @return
 		 */
 		public static String getFileExtension(String fileName) {
+			if ( StringUtils.hasText(fileName) ) {
+				throw new IllegalArgumentException("fileName is null");
+			}
+			
 			if (fileName.lastIndexOf(EXTENSION_SEPARATOR) == -1) {
 				return null;
 			}
@@ -294,11 +343,17 @@ public class Spring4FileUtil {
 		 * @return
 		 */
 		public static String readableFileSize(long fileSize) {
-			if (fileSize <= 0) return "0";
+			final DecimalFormat decimalFormat = new DecimalFormat("#,##0.#");
+
+			if (fileSize < 0) {
+				throw new IllegalArgumentException("fileSize is invalid");
+			}
+
+			if (fileSize == 0) return "0 B";
 			String[] units = { "B", "KB", "MB", "GB", "TB" };
 
-		    int digitGroups = (int) (Math.log10(fileSize)/Math.log10(1024));
-		    return new DecimalFormat("#,##0.#").format(fileSize/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+			int digitGroups = Math.min((int) (Math.log10(fileSize) / Math.log10(1024)), units.length - 1);
+		    return decimalFormat.format(fileSize/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
 		}
 	}
 

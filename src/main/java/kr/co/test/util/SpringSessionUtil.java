@@ -3,11 +3,13 @@ package kr.co.test.util;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 public class SpringSessionUtil {
-	
+
 	private SpringSessionUtil() {
 		super();
 	}
@@ -20,6 +22,10 @@ public class SpringSessionUtil {
 	 * @param obj
 	 */
 	public static void setSessionLoginInfo(Object obj) {
+		if ( ObjectUtils.isEmpty(obj) ) {
+			throw new IllegalArgumentException("obj is null");
+		}
+
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 		HttpServletRequest request = attr.getRequest();
 		HttpSession session = request.getSession(false);
@@ -30,8 +36,8 @@ public class SpringSessionUtil {
 
 		/*
 		 * 세션 타임아웃 적용 우선 순위
-		 *   - 1, 2번 같이 적용되어 있으면 세션 상태가 이상해지더만.... 
-		 *   
+		 *   - 1, 2번 같이 적용되어 있으면 세션 상태가 이상해지더만....
+		 *
 		 * 	1. [특정 세션] 유효시간 설정 (단위:초)
 		 * 	2. [공통 세션] 유효시간 설정 web.xml (단위:분)
 		 * 	3. [공통 세션] 유효시간 설정 Tomcat경로/conf/web.xml (단위:분)
@@ -52,6 +58,14 @@ public class SpringSessionUtil {
 
 
 	public static void setSessionAttribute(String sKey, Object obj) {
+		if ( StringUtils.hasText(sKey) ) {
+			throw new IllegalArgumentException("sKey is null");
+		}
+
+		if ( ObjectUtils.isEmpty(obj) ) {
+			throw new IllegalArgumentException("obj is null");
+		}
+
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 		HttpServletRequest request = attr.getRequest();
 		HttpSession session = request.getSession();
@@ -60,6 +74,18 @@ public class SpringSessionUtil {
 	}
 
 	public static void setSessionAttribute(String sKey, Object obj, int nSecond) {
+		if ( StringUtils.hasText(sKey) ) {
+			throw new IllegalArgumentException("sKey is null");
+		}
+
+		if ( ObjectUtils.isEmpty(obj) ) {
+			throw new IllegalArgumentException("obj is null");
+		}
+
+		if ( nSecond <= 0 ) {
+			throw new IllegalArgumentException("nSecond is invalid");
+		}
+
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 		HttpServletRequest request = attr.getRequest();
 		HttpSession session = request.getSession();
@@ -70,6 +96,10 @@ public class SpringSessionUtil {
 	}
 
 	public static Object getSessionAttribute(String sKey) {
+		if ( StringUtils.hasText(sKey) ) {
+			throw new IllegalArgumentException("sKey is null");
+		}
+
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 		HttpServletRequest request = attr.getRequest();
 		HttpSession session = request.getSession(false);

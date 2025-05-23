@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -46,6 +48,10 @@ public class ContextUtil {
 	 * @return
 	 */
 	public Object getBean(String beanName) {
+		if ( StringUtils.hasText(beanName) ) {
+			throw new IllegalArgumentException("beanName is null");
+		}
+
 		WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
 		return (context == null) ? null : context.getBean(beanName);
 	}
@@ -83,6 +89,10 @@ public class ContextUtil {
 	 * @return
 	 */
 	public Object getAttrFromRequest(String key) {
+		if ( StringUtils.hasText(key) ) {
+			throw new IllegalArgumentException("key is null");
+		}
+
 		ServletRequestAttributes attr = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
 		return attr.getAttribute(key, ServletRequestAttributes.SCOPE_REQUEST);
 	}
@@ -93,6 +103,14 @@ public class ContextUtil {
 	 * @param obj
 	 */
 	public void setAttrToRequest(String key, Object obj) {
+		if ( StringUtils.hasText(key) ) {
+			throw new IllegalArgumentException("key is null");
+		}
+
+		if ( ObjectUtils.isEmpty(obj) ) {
+			throw new IllegalArgumentException("obj is null");
+		}
+
 		ServletRequestAttributes attr = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
 		attr.setAttribute(key, obj, ServletRequestAttributes.SCOPE_REQUEST);
 	}
@@ -102,6 +120,10 @@ public class ContextUtil {
 	 * @param key
 	 */
 	public void removeAttrFromRequest(String key) {
+		if ( StringUtils.hasText(key) ) {
+			throw new IllegalArgumentException("key is null");
+		}
+
 		ServletRequestAttributes attr = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
 		attr.removeAttribute(key, ServletRequestAttributes.SCOPE_REQUEST);
 	}
@@ -112,6 +134,10 @@ public class ContextUtil {
 	 * @return
 	 */
 	public Object getAttrFromSession(String key) {
+		if ( StringUtils.hasText(key) ) {
+			throw new IllegalArgumentException("key is null");
+		}
+
 		ServletRequestAttributes attr = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
 		return attr.getAttribute(key, ServletRequestAttributes.SCOPE_SESSION);
 	}
@@ -122,6 +148,14 @@ public class ContextUtil {
 	 * @return
 	 */
 	public void setAttrToSession(String key, Object obj) {
+		if ( StringUtils.hasText(key) ) {
+			throw new IllegalArgumentException("key is null");
+		}
+
+		if ( ObjectUtils.isEmpty(obj) ) {
+			throw new IllegalArgumentException("obj is null");
+		}
+
 		ServletRequestAttributes attr = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
 		attr.setAttribute(key, obj, ServletRequestAttributes.SCOPE_SESSION);
 	}
@@ -131,6 +165,10 @@ public class ContextUtil {
 	 * @param key
 	 */
 	public void removeAttrFromSession(String key) {
+		if ( StringUtils.hasText(key) ) {
+			throw new IllegalArgumentException("key is null");
+		}
+
 		ServletRequestAttributes attr = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
 		attr.removeAttribute(key, ServletRequestAttributes.SCOPE_SESSION);
 	}
