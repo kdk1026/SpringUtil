@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="kr.co.test.jasypt.JasyptTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-05-24T14:05:58" hostname="DESKTOP-GFTQFL2" time="0.502">
+  <properties/>
+  <testcase name="test()" classname="kr.co.test.jasypt.JasyptTest" time="0.502"/>
+  <system-out><![CDATA[Pf249phSJzMFcJzL7WV19imL32c8uQu+hAD8nE43Y+w=
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
