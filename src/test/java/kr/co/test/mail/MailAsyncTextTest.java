@@ -19,30 +19,30 @@ import kr.co.test.component.email.MailSenderComponent;
  * -----------------------------------
  * 2021. 7. 31. 김대광	최초작성
  * </pre>
- * 
+ *
  *
  * @author 김대광
  */
 @SpringBootTest
-public class MailAsyncTextTest {
-	
+class MailAsyncTextTest {
+
 	@Autowired
 	private MailSenderComponent mailSenderComponent;
-	
+
 	@Autowired
 	private ThreadPoolTaskExecutor executor;
 
 	@Test
-	public void test() throws IllegalStateException, InterruptedException, MessagingException {
+	void test() throws IllegalStateException, InterruptedException, MessagingException {
 		String mailTo = "kdk1026@naver.com";
 		String mailSubject = "메일 테스트 (텍스트)";
 		String mailMsg = "테스트 12345";
-		
-		// TODO : 음... 비동기는 단위 테스트 방법이 독특한듯.. 컨트롤러에서 서비스 호출하게 해놓고, 웹에서 호출하면 돌거 같다...
+
+		// XXX : 음... 비동기는 단위 테스트 방법이 독특한듯.. 컨트롤러에서 서비스 호출하게 해놓고, 웹에서 호출하면 돌거 같다...
 		mailSenderComponent.asyncSendmail(false, mailTo, mailSubject, mailMsg);
-		
+
 		boolean awaitTermination = executor.getThreadPoolExecutor().awaitTermination(3, TimeUnit.SECONDS);
 		assertTrue(awaitTermination);
 	}
-	
+
 }

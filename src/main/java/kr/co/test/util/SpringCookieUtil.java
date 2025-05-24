@@ -52,15 +52,15 @@ public class SpringCookieUtil {
 	 */
 	public void addCookie(HttpServletResponse response, String name, String value, int maxAge, boolean isSecure, boolean isHttpOnly, String domain) {
 		if ( response == null ) {
-			throw new IllegalArgumentException("response is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("response"));
 		}
 
 		if ( !StringUtils.hasText(name) ) {
-			throw new IllegalArgumentException("name is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("name"));
 		}
 
 		if ( !StringUtils.hasText(value) ) {
-			throw new IllegalArgumentException("value is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("value"));
 		}
 
 		ResponseCookie cookie = ResponseCookie.from(value, value)

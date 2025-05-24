@@ -8,6 +8,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -50,7 +51,7 @@ public class ContextUtil {
 	 */
 	public Object getBean(String beanName) {
 		if ( !StringUtils.hasText(beanName) ) {
-			throw new IllegalArgumentException("beanName is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("beanName"));
 		}
 
 		WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
@@ -91,11 +92,11 @@ public class ContextUtil {
 	 */
 	public Object getAttrFromRequest(String key) {
 		if ( !StringUtils.hasText(key) ) {
-			throw new IllegalArgumentException("key is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
 		}
 
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		return attr.getAttribute(key, ServletRequestAttributes.SCOPE_REQUEST);
+		return attr.getAttribute(key, RequestAttributes.SCOPE_REQUEST);
 	}
 
 	/**
@@ -105,15 +106,15 @@ public class ContextUtil {
 	 */
 	public void setAttrToRequest(String key, Object obj) {
 		if ( !StringUtils.hasText(key) ) {
-			throw new IllegalArgumentException("key is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
 		}
 
 		if ( ObjectUtils.isEmpty(obj) ) {
-			throw new IllegalArgumentException("obj is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("obj"));
 		}
 
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		attr.setAttribute(key, obj, ServletRequestAttributes.SCOPE_REQUEST);
+		attr.setAttribute(key, obj, RequestAttributes.SCOPE_REQUEST);
 	}
 
 	/**
@@ -126,7 +127,7 @@ public class ContextUtil {
 		}
 
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		attr.removeAttribute(key, ServletRequestAttributes.SCOPE_REQUEST);
+		attr.removeAttribute(key, RequestAttributes.SCOPE_REQUEST);
 	}
 
 	/**
@@ -136,11 +137,11 @@ public class ContextUtil {
 	 */
 	public Object getAttrFromSession(String key) {
 		if ( !StringUtils.hasText(key) ) {
-			throw new IllegalArgumentException("key is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
 		}
 
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		return attr.getAttribute(key, ServletRequestAttributes.SCOPE_SESSION);
+		return attr.getAttribute(key, RequestAttributes.SCOPE_SESSION);
 	}
 
 	/**
@@ -150,15 +151,15 @@ public class ContextUtil {
 	 */
 	public void setAttrToSession(String key, Object obj) {
 		if ( !StringUtils.hasText(key) ) {
-			throw new IllegalArgumentException("key is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
 		}
 
 		if ( ObjectUtils.isEmpty(obj) ) {
-			throw new IllegalArgumentException("obj is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("obj"));
 		}
 
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		attr.setAttribute(key, obj, ServletRequestAttributes.SCOPE_SESSION);
+		attr.setAttribute(key, obj, RequestAttributes.SCOPE_SESSION);
 	}
 
 	/**
@@ -167,11 +168,11 @@ public class ContextUtil {
 	 */
 	public void removeAttrFromSession(String key) {
 		if ( !StringUtils.hasText(key) ) {
-			throw new IllegalArgumentException("key is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
 		}
 
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		attr.removeAttribute(key, ServletRequestAttributes.SCOPE_SESSION);
+		attr.removeAttribute(key, RequestAttributes.SCOPE_SESSION);
 	}
 
 }

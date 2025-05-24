@@ -25,6 +25,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import kr.co.test.util.ExceptionMessage;
+
 /**
  * <pre>
  * 개정이력
@@ -61,39 +63,35 @@ public class Spring3FileUtil {
 
 		private static final long serialVersionUID = 1L;
 
-		public FileVO() {
-			super();
-		}
-
 		/**
 		 * 파일 경로
 		 */
-		public String destFilePath;
+		protected String destFilePath;
 
 		/**
 		 * 파일 확장자
 		 */
-		public String fileExt;
+		protected String fileExt;
 
 		/**
 		 * 원파일명
 		 */
-		public String orignlFileNm;
+		protected String orignlFileNm;
 
 		/**
 		 * 저장파일명
 		 */
-		public String saveFileNm;
+		protected String saveFileNm;
 
 		/**
 		 * 파일 크기
 		 */
-		public long fileSize;
+		protected long fileSize;
 
 		/**
 		 * 파일 크기 단위
 		 */
-		public String fileSizeUnits;
+		protected String fileSizeUnits;
 
 		public String toString() {
 			return ToStringBuilder.reflectionToString(
@@ -114,11 +112,11 @@ public class Spring3FileUtil {
 	 */
 	public static FileVO uploadFile(MultipartFile multipartFile, String destFilePath) {
 		if ( multipartFile == null ) {
-			throw new IllegalArgumentException("multipartFile is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("multipartFile"));
 		}
 
 		if ( !StringUtils.hasText(destFilePath) ) {
-			throw new IllegalArgumentException("destFilePath is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("destFilePath"));
 		}
 
 		destFilePath = (destFilePath.replaceAll("^(.*)(.$)", "$2").equals("/")) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
@@ -130,7 +128,7 @@ public class Spring3FileUtil {
 		StringBuilder sb = new StringBuilder();
 		String fileExt = EXTENSION_SEPARATOR + InnerFileutils.getFileExtension(multipartFile.getOriginalFilename());
 
-		sb.append( UUID.randomUUID().toString().replaceAll("-", "") ).append(fileExt);
+		sb.append( UUID.randomUUID().toString().replace("-", "") ).append(fileExt);
 		String saveFileNm = sb.toString();
 
 		sb.setLength(0);
@@ -165,15 +163,15 @@ public class Spring3FileUtil {
 	 */
 	public static void downloadFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
 		if ( ObjectUtils.isEmpty(fileVO) ) {
-			throw new IllegalArgumentException("fileVO is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("fileVO"));
 		}
 
 		if ( request == null ) {
-			throw new IllegalArgumentException("request is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("request"));
 		}
 
 		if ( response == null ) {
-			throw new IllegalArgumentException("response is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("response"));
 		}
 
 		String downloadlFileNm = "";
@@ -213,15 +211,15 @@ public class Spring3FileUtil {
 	 */
 	public static void openPdfFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
 		if ( ObjectUtils.isEmpty(fileVO) ) {
-			throw new IllegalArgumentException("fileVO is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("fileVO"));
 		}
 
 		if ( request == null ) {
-			throw new IllegalArgumentException("request is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("request"));
 		}
 
 		if ( response == null ) {
-			throw new IllegalArgumentException("response is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("response"));
 		}
 
 		String downloadlFileNm = "";
@@ -263,11 +261,11 @@ public class Spring3FileUtil {
 	 */
 	public static String contentDisposition(HttpServletRequest request, String str) {
 		if ( request == null ) {
-			throw new IllegalArgumentException("request is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("request"));
 		}
 
 		if ( !StringUtils.hasText(str) ) {
-			throw new IllegalArgumentException("str is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("str"));
 		}
 
 		String sRes = "";
@@ -275,9 +273,9 @@ public class Spring3FileUtil {
 
 		try {
 			if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
-				sRes = URLEncoder.encode(str, StandardCharsets.UTF_8.toString()).replaceAll("\\+", " ");
+				sRes = URLEncoder.encode(str, StandardCharsets.UTF_8.toString()).replace("\\+", " ");
 			} else {
-				sRes = new String(str.getBytes(StandardCharsets.UTF_8.toString()), "ISO-8859-1");
+				sRes = new String(str.getBytes(StandardCharsets.UTF_8.toString()), StandardCharsets.ISO_8859_1);
 			}
 
 		} catch (Exception e) {
@@ -298,7 +296,7 @@ public class Spring3FileUtil {
 		 */
 		public static String getFileExtension(String fileName) {
 			if ( !StringUtils.hasText(fileName) ) {
-				throw new IllegalArgumentException("fileName is null");
+				throw new IllegalArgumentException(ExceptionMessage.isNull("fileName"));
 			}
 
 			if (fileName.lastIndexOf(EXTENSION_SEPARATOR) == -1) {
@@ -320,7 +318,7 @@ public class Spring3FileUtil {
 			final DecimalFormat decimalFormat = new DecimalFormat("#,##0.#");
 
 			if (fileSize < 0) {
-				throw new IllegalArgumentException("fileSize is invalid");
+				throw new IllegalArgumentException(ExceptionMessage.inValid("fileSize"));
 			}
 
 			if (fileSize == 0) return "0 B";

@@ -23,7 +23,7 @@ public class SpringSessionUtil {
 	 */
 	public static void setSessionLoginInfo(Object obj) {
 		if ( ObjectUtils.isEmpty(obj) ) {
-			throw new IllegalArgumentException("obj is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("obj"));
 		}
 
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
@@ -59,11 +59,11 @@ public class SpringSessionUtil {
 
 	public static void setSessionAttribute(String sKey, Object obj) {
 		if ( !StringUtils.hasText(sKey) ) {
-			throw new IllegalArgumentException("sKey is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("sKey"));
 		}
 
 		if ( ObjectUtils.isEmpty(obj) ) {
-			throw new IllegalArgumentException("obj is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("obj"));
 		}
 
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
@@ -75,15 +75,15 @@ public class SpringSessionUtil {
 
 	public static void setSessionAttribute(String sKey, Object obj, int nSecond) {
 		if ( !StringUtils.hasText(sKey) ) {
-			throw new IllegalArgumentException("sKey is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("sKey"));
 		}
 
 		if ( ObjectUtils.isEmpty(obj) ) {
-			throw new IllegalArgumentException("obj is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("obj"));
 		}
 
 		if ( nSecond <= 0 ) {
-			throw new IllegalArgumentException("nSecond is invalid");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("nSecond"));
 		}
 
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
@@ -97,7 +97,7 @@ public class SpringSessionUtil {
 
 	public static Object getSessionAttribute(String sKey) {
 		if ( !StringUtils.hasText(sKey) ) {
-			throw new IllegalArgumentException("sKey is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("sKey"));
 		}
 
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();

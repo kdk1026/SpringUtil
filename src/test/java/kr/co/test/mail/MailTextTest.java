@@ -14,24 +14,24 @@ import kr.co.test.component.email.MailSenderComponent;
  * -----------------------------------
  * 2021. 7. 31. 김대광	최초작성
  * </pre>
- * 
+ *
  *
  * @author 김대광
  */
 @SpringBootTest
-public class MailTextTest {
-	
+class MailTextTest {
+
 	@Autowired
 	private MailSenderComponent mailSenderComponent;
 
 	@Test
-	public void test() {
+	void test() {
 		String mailTo = "daekwang1026@gmail.com";
 		String mailSubject = "메일 테스트 (텍스트)";
 		String mailMsg = "테스트 12345";
-		
+
 //		System.out.println( mailSenderComponent.sendmail(false, mailTo, mailSubject, mailMsg) );
 		assertTrue( mailSenderComponent.sendmail(false, mailTo, mailSubject, mailMsg) );
 	}
-	
+
 }

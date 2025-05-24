@@ -201,11 +201,11 @@ public class RestTemplateUtil {
 			, Map<String, Object> headerMap, Class<?> responseType, Object... uriVariables) {
 
 		if ( StringUtils.hasLength(url) ) {
-			throw new IllegalArgumentException("url is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("url"));
 		}
 
 		if ( responseType == null ) {
-			throw new IllegalArgumentException("responseType is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("responseType"));
 		}
 
 		RestTemplate restTemplate = RestTemplateUtil.getRestTemplate(isSSL);
@@ -238,11 +238,11 @@ public class RestTemplateUtil {
 			, Map<String, Object> headerMap, Map<String, Object> bodyMap, Class<?> responseType, Object... uriVariables) throws IOException {
 
 		if ( StringUtils.hasLength(url) ) {
-			throw new IllegalArgumentException("url is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("url"));
 		}
 
 		if ( responseType == null ) {
-			throw new IllegalArgumentException("responseType is null");
+			throw new IllegalArgumentException(ExceptionMessage.isNull("responseType"));
 		}
 
 		RestTemplate restTemplate = RestTemplateUtil.getRestTemplate(isSSL);

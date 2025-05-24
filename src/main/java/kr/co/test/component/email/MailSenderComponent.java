@@ -13,7 +13,7 @@ import kr.co.test.component.email.MailSenderComponentImpl.MailMultiSendResult;
  * -----------------------------------
  * 2021. 7. 31. 김대광	최초작성
  * </pre>
- * 
+ *
  *
  * @author 김대광
  */
@@ -28,7 +28,7 @@ public interface MailSenderComponent {
 	 * @return
 	 */
 	public boolean sendmail(boolean html, String mailTo, String mailSubject, String mailMsg);
-	
+
 	/**
 	 * 대량 메일 발송
 	 * @param html
@@ -37,8 +37,8 @@ public interface MailSenderComponent {
 	 * @param mailMsg
 	 * @return
 	 */
-	public boolean sendMail(boolean html, List<String> mailToList, String mailSubject, String mailMsg);
-	
+	public boolean sendMailMulti(boolean html, List<String> mailToList, String mailSubject, String mailMsg);
+
 	/**
 	 * <pre>
 	 * 대량 메일 발송
@@ -52,7 +52,7 @@ public interface MailSenderComponent {
 	 * @return
 	 */
 	public MailMultiSendResult sendmailResult(boolean html, List<String> mailToList, String mailSubject, String mailMsg);
-	
+
 	/**
 	 * 첨부 파일 일반 메일 발송
 	 * @param html
@@ -63,7 +63,7 @@ public interface MailSenderComponent {
 	 * @return
 	 */
 	public boolean sendmailWithAttachFile(boolean html, String mailTo, String mailSubject, String mailMsg, File attachFile);
-	
+
 	/**
 	 * 첨부 파일 대량 메일 발송
 	 * @param html
@@ -74,7 +74,7 @@ public interface MailSenderComponent {
 	 * @return
 	 */
 	public boolean sendmailWithAttachFile(boolean html, List<String> mailToList, String mailSubject, String mailMsg, File attachFile);
-	
+
 	/**
 	 * <pre>
 	 * 첨부 파일 대량 메일 발송
@@ -89,7 +89,7 @@ public interface MailSenderComponent {
 	 * @return
 	 */
 	public MailMultiSendResult sendmailWithAttachFileResult(boolean html, List<String> mailToList, String mailSubject, String mailMsg, File attachFile);
-	
+
 	/**
 	 * <비동기> 일반 메일 발송
 	 * @param html
@@ -99,7 +99,7 @@ public interface MailSenderComponent {
 	 * @throws MessagingException
 	 */
 	public void asyncSendmail(boolean html, String mailTo, String mailSubject, String mailMsg) throws MessagingException;
-	
+
 	/**
 	 * <비동기> 대량 메일 발송
 	 * @param html
@@ -109,7 +109,7 @@ public interface MailSenderComponent {
 	 * @throws MessagingException
 	 */
 	public void asyncSendmail(boolean html, List<String> mailToList, String mailSubject, String mailMsg) throws MessagingException;
-	
+
 	/**
 	 * <비동기> 첨부 파일 일반 메일 발송
 	 * @param html
@@ -120,7 +120,7 @@ public interface MailSenderComponent {
 	 * @throws MessagingException
 	 */
 	public void asyncSendmailWithAttachFile(boolean html, String mailTo, String mailSubject, String mailMsg, File attachFile) throws MessagingException;
-	
+
 	/**
 	 * <비동기> 첨부 파일 대량 메일 발송
 	 * @param html
@@ -131,5 +131,5 @@ public interface MailSenderComponent {
 	 * @throws MessagingException
 	 */
 	public void asyncSendmailWithAttachFile(boolean html, List<String> mailToList, String mailSubject, String mailMsg, File attachFile) throws MessagingException;
-	
+
 }

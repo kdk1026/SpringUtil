@@ -36,10 +36,10 @@ public class ParamCollector {
         map.remove(key);
     }
 
-    public void putAll(Map<? extends String, ? extends Object> m) {
+    public void putAll(Map<String, Object> m) {
     	map.putAll(m);
     }
-    
+
 	public void putDefaultBlank(String ... keys) {
 		for (int i=0; i < keys.length; i++) {
 			map.put(keys[i], "");
@@ -85,27 +85,27 @@ public class ParamCollector {
 	public double getDouble(String key) {
 		return map.getDouble(key);
 	}
-	
+
 	public boolean getBoolean(String key) {
 		return map.getBoolean(key);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<Object> getArray(String key) {
 		List<Object> list = null;
 		try {
 			list = (List<Object>) map.get(key);
 		} catch (ClassCastException e) {
-			list = new ArrayList<Object>();
+			list = new ArrayList<>();
 			list.add(map.get(key));
 		}
 		return list;
 	}
-	
+
 	public MultipartFile getMultipartFile(String key) {
 		return (MultipartFile) map.get(key);
 	}
-	
+
 	public ParamMap getMapAll() {
 		ParamMap paramMap = this.getHeardMap();
 		paramMap.putAll(this.map);
