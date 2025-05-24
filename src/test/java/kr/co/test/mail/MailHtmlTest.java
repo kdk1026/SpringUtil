@@ -30,7 +30,6 @@ class MailHtmlTest {
 		String mailSubject = "메일 테스트 (HTML)";
 		String mailMsg = "<h3>테스트 12345</h3>";
 
-//		System.out.println( mailSenderComponent.sendmail(false, mailTo, mailSubject, mailMsg) );
 		assertTrue( mailSenderComponent.sendmail(true, mailTo, mailSubject, mailMsg) );
 	}
 

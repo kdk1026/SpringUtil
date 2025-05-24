@@ -1,5 +1,7 @@
 package kr.co.test.jasypt;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +26,8 @@ class JasyptTest {
 
         String encryptedPassword = encryptor.encrypt("iccxhvxyoarneaks");
         System.out.println(encryptedPassword);
-        System.out.println(encryptor.decrypt(encryptedPassword)  );
+
+        assertEquals("iccxhvxyoarneaks", encryptor.decrypt(encryptedPassword));
 	}
 
 }

@@ -30,7 +30,6 @@ class MailTextTest {
 		String mailSubject = "메일 테스트 (텍스트)";
 		String mailMsg = "테스트 12345";
 
-//		System.out.println( mailSenderComponent.sendmail(false, mailTo, mailSubject, mailMsg) );
 		assertTrue( mailSenderComponent.sendmail(false, mailTo, mailSubject, mailMsg) );
 	}
 

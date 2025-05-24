@@ -29,13 +29,6 @@ class MailMultiTextTest {
 
 	@Test
 	void test() {
-		/*
-		 * 이런 옘병할 언제 바뀐겨... 왜 타입을 바꾸가 난리야..
-		 * 내가 Java 8 이후에서 한 일이 없었구나... 아니면 Oracle JDK가 아니라서??? 모르겠다...
-		 * 요로나 저라나 닝기미 빠빠빠
-		 */
-		//List<Object> mailTos = Arrays.asList( new String[] {"daekwang1026@gmail.com", "kdk1026@naver.com"} );
-
 		List<String> mailTos = new ArrayList<>();
 		mailTos.add("daekwang1026@gmail.com");
 		mailTos.add("kdk1026@naver.com");
