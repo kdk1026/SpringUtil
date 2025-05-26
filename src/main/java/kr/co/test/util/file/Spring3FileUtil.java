@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -277,8 +278,7 @@ public class Spring3FileUtil {
 			} else {
 				sRes = new String(str.getBytes(StandardCharsets.UTF_8.toString()), StandardCharsets.ISO_8859_1);
 			}
-
-		} catch (Exception e) {
+		} catch (UnsupportedEncodingException e) {
 			logger.error("", e);
 		}
 

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -202,8 +203,7 @@ public class Spring4FileUtil {
 
 		try ( OutputStream os = response.getOutputStream() ) {
 			Files.copy(source, os);
-
-		} catch (Exception e) {
+		} catch (IOException e) {
 			logger.error("", e);
 		}
 	}
@@ -248,8 +248,7 @@ public class Spring4FileUtil {
 
 		try ( OutputStream os = response.getOutputStream() ) {
 			Files.copy(source, os);
-
-		} catch (Exception e) {
+		} catch (IOException e) {
 			logger.error("", e);
 		}
 	}
@@ -303,8 +302,7 @@ public class Spring4FileUtil {
 			} else {
 				sRes = new String(str.getBytes(StandardCharsets.UTF_8.toString()), StandardCharsets.ISO_8859_1);
 			}
-
-		} catch (Exception e) {
+		} catch (UnsupportedEncodingException e) {
 			logger.error("", e);
 		}
 

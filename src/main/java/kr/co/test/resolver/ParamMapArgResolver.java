@@ -1,6 +1,7 @@
 package kr.co.test.resolver;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -35,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * -----------------------------------
  * 2021. 7. 31. 김대광	최초작성
  * </pre>
- * 
+ *
  * <pre>
  * MVC Config에서 addArgumentResolvers 메소드 @Override 하여 등록
  * 	extends WebMvcConfigurerAdapter 지원
@@ -45,11 +46,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author 김대광
  */
 public class ParamMapArgResolver implements HandlerMethodArgumentResolver {
-	
+
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	
+
 	/**
-	 * Java 1.7 Base 
+	 * Java 1.7 Base
 	 */
 	private static final String UTF_8 = StandardCharsets.UTF_8.toString();
 
@@ -71,7 +72,7 @@ public class ParamMapArgResolver implements HandlerMethodArgumentResolver {
 	public boolean supportsParameter(MethodParameter parameter) {
 		return ParamCollector.class.isAssignableFrom(parameter.getParameterType());
 	}
-	
+
 	private void setRequestHeader(NativeWebRequest webRequest) {
 
 		HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
@@ -101,17 +102,17 @@ public class ParamMapArgResolver implements HandlerMethodArgumentResolver {
 			if ( MediaType.APPLICATION_FORM_URLENCODED_VALUE.equals(contentType) ) {
 				this.setFormParam(request, paramCollector);
 			}
-			
+
 			if ( contentType.indexOf(MediaType.MULTIPART_FORM_DATA_VALUE) > -1 ) {
 				this.setMultipartParam(request, paramCollector);
 			}
-			
+
 			if ( MediaType.APPLICATION_JSON_VALUE.equals(contentType) ) {
 				this.setJsonParam(request, paramCollector);
 			}
 		}
 	}
-	
+
 	private void setQueryStringParam(HttpServletRequest request, ParamCollector paramCollector) {
 		Enumeration<String> en = request.getParameterNames();
     	while (en.hasMoreElements()) {
@@ -163,8 +164,7 @@ public class ParamMapArgResolver implements HandlerMethodArgumentResolver {
     }
 
     public void setJsonParam(HttpServletRequest request, ParamCollector paramCollector) {
-        try {
-        	BufferedReader buffer = new BufferedReader(new InputStreamReader(request.getInputStream(), UTF_8));
+        try ( BufferedReader buffer = new BufferedReader(new InputStreamReader(request.getInputStream(), UTF_8)) ) {
         	StringBuilder sb = new StringBuilder();
 
             String reqDataLine = "";
@@ -172,7 +172,6 @@ public class ParamMapArgResolver implements HandlerMethodArgumentResolver {
             while((reqDataLine = buffer.readLine()) != null) {
             	sb.append(reqDataLine);
             }
-            buffer.close();
 
             if (sb.toString().startsWith("[")) {
             	paramCollector.put("JSONArray", InnerJacksonUtil.FromJson.converterJsonStrToList(sb.toString()));
@@ -180,16 +179,14 @@ public class ParamMapArgResolver implements HandlerMethodArgumentResolver {
             	Map<String, Object> convertMap = InnerJacksonUtil.FromJson.converterJsonStrToMap(sb.toString());
             	paramCollector.putAll(convertMap);
             }
-
-        } catch (Exception e) {
-			logger.error(e.getClass().getSimpleName());
-			logger.debug(e.getCause().getMessage());
+        } catch (IOException e) {
+			logger.error("", e);
 		}
     }
-    
+
     private static class InnerJacksonUtil {
     	private static final Logger logger = LoggerFactory.getLogger(InnerJacksonUtil.class);
-    	
+
     	private static class FromJson {
     		@SuppressWarnings("unchecked")
     		public static Map<String, Object> converterJsonStrToMap(String jsonStr) {
@@ -198,12 +195,12 @@ public class ParamMapArgResolver implements HandlerMethodArgumentResolver {
     			ObjectMapper mapper = new ObjectMapper();
     			try {
     				map = mapper.readValue(jsonStr, Map.class);
-    			} catch (Exception e) {
+    			} catch (IOException e) {
     				logger.error("", e);
     			}
     			return map;
     		}
-    		
+
     		@SuppressWarnings("unchecked")
     		public static List<Map<String, Object>> converterJsonStrToList(String jsonArrStr) {
     			List<Map<String, Object>> list = new ArrayList<>();
@@ -211,7 +208,7 @@ public class ParamMapArgResolver implements HandlerMethodArgumentResolver {
     			ObjectMapper mapper = new ObjectMapper();
     			try {
     				list = mapper.readValue(jsonArrStr, List.class);
-    			} catch (Exception e) {
+    			} catch (IOException e) {
     				logger.error("", e);
     			}
     			return list;
