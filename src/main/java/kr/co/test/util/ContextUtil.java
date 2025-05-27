@@ -19,6 +19,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * 2021. 7. 30. 김대광	최초작성
  * 2021. 8. 19. 김대광	SonarLint 지시에 따른 수정
  * 2025. 5. 18. 김대광	AI가 추천한 Singleton 패턴으로 변경
+ * 2025. 5. 27. 김대광	유틸은 Singleton 패턴을 사용하지 않는 것이 좋다는 의견 반영, static Class로 구분
  * </pre>
  *
  * @see <a href="https://offbyone.tistory.com/144">Ref</a>
@@ -27,21 +28,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  */
 public class ContextUtil {
 
-	private static ContextUtil instance;
-
-	/**
-	 * 외부에서 객체 인스턴스화 불가
-	 */
 	private ContextUtil() {
 		super();
-	}
-
-	public static synchronized ContextUtil getInstance() {
-		if (instance == null) {
-			instance = new ContextUtil();
-		}
-
-		return instance;
 	}
 
 	/**
@@ -49,7 +37,7 @@ public class ContextUtil {
 	 * @param beanName
 	 * @return
 	 */
-	public Object getBean(String beanName) {
+	public static Object getBean(String beanName) {
 		if ( !StringUtils.hasText(beanName) ) {
 			throw new IllegalArgumentException(ExceptionMessage.isNull("beanName"));
 		}
@@ -59,120 +47,132 @@ public class ContextUtil {
 	}
 
 	/**
-	 * HttpServletReqeust 객체를 직접 얻습니다.
-	 * @return
-	 */
-	public HttpServletRequest getRequest() {
-		ServletRequestAttributes attr = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
-		return attr.getRequest();
-	}
-
-	/**
 	 * HttpServletResponse 객체를 직접 얻습니다.
 	 * @return
 	 */
-	public HttpServletResponse getResponse() {
+	public static HttpServletResponse getResponse() {
 		ServletRequestAttributes attr = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
 		return attr.getResponse();
 	}
 
-	/**
-	 * HttpSession 객체를 직접 얻습니다.
-	 * @param create
-	 * @return
-	 */
-	public HttpSession getSession(boolean create) {
-		return getRequest().getSession(create);
+	public static class Request {
+		private Request() {
+			super();
+		}
+
+		/**
+		 * HttpServletReqeust 객체를 직접 얻습니다.
+		 * @return
+		 */
+		public static HttpServletRequest getRequest() {
+			ServletRequestAttributes attr = (ServletRequestAttributes)RequestContextHolder.currentRequestAttributes();
+			return attr.getRequest();
+		}
+
+		/**
+		 * REQUEST 영역에서 가져오기
+		 * @param key
+		 * @return
+		 */
+		public static Object getAttrFromRequest(String key) {
+			if ( !StringUtils.hasText(key) ) {
+				throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
+			}
+
+			ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+			return attr.getAttribute(key, RequestAttributes.SCOPE_REQUEST);
+		}
+
+		/**
+		 * REQUEST 영역에 객체 저장
+		 * @param key
+		 * @param obj
+		 */
+		public static void setAttrToRequest(String key, Object obj) {
+			if ( !StringUtils.hasText(key) ) {
+				throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
+			}
+
+			if ( ObjectUtils.isEmpty(obj) ) {
+				throw new IllegalArgumentException(ExceptionMessage.isNull("obj"));
+			}
+
+			ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+			attr.setAttribute(key, obj, RequestAttributes.SCOPE_REQUEST);
+		}
+
+		/**
+		 * REQUEST 영역에서 삭제
+		 * @param key
+		 */
+		public static void removeAttrFromRequest(String key) {
+			if ( !StringUtils.hasText(key) ) {
+				throw new IllegalArgumentException("key is null");
+			}
+
+			ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+			attr.removeAttribute(key, RequestAttributes.SCOPE_REQUEST);
+		}
 	}
 
-	/**
-	 * REQUEST 영역에서 가져오기
-	 * @param key
-	 * @return
-	 */
-	public Object getAttrFromRequest(String key) {
-		if ( !StringUtils.hasText(key) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
+	public static class Session {
+		private Session() {
+			super();
 		}
 
-		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		return attr.getAttribute(key, RequestAttributes.SCOPE_REQUEST);
-	}
-
-	/**
-	 * REQUEST 영역에 객체 저장
-	 * @param key
-	 * @param obj
-	 */
-	public void setAttrToRequest(String key, Object obj) {
-		if ( !StringUtils.hasText(key) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
+		/**
+		 * HttpSession 객체를 직접 얻습니다.
+		 * @param create
+		 * @return
+		 */
+		public static HttpSession getSession(boolean create) {
+			return ContextUtil.Request.getRequest().getSession(create);
 		}
 
-		if ( ObjectUtils.isEmpty(obj) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("obj"));
+		/**
+		 * SESSION 영역에서 가져오기
+		 * @param key
+		 * @return
+		 */
+		public static Object getAttrFromSession(String key) {
+			if ( !StringUtils.hasText(key) ) {
+				throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
+			}
+
+			ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+			return attr.getAttribute(key, RequestAttributes.SCOPE_SESSION);
 		}
 
-		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		attr.setAttribute(key, obj, RequestAttributes.SCOPE_REQUEST);
-	}
+		/**
+		 * SESSION 영역에 객체 저장
+		 * @param key
+		 * @return
+		 */
+		public static void setAttrToSession(String key, Object obj) {
+			if ( !StringUtils.hasText(key) ) {
+				throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
+			}
 
-	/**
-	 * REQUEST 영역에서 삭제
-	 * @param key
-	 */
-	public void removeAttrFromRequest(String key) {
-		if ( !StringUtils.hasText(key) ) {
-			throw new IllegalArgumentException("key is null");
+			if ( ObjectUtils.isEmpty(obj) ) {
+				throw new IllegalArgumentException(ExceptionMessage.isNull("obj"));
+			}
+
+			ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+			attr.setAttribute(key, obj, RequestAttributes.SCOPE_SESSION);
 		}
 
-		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		attr.removeAttribute(key, RequestAttributes.SCOPE_REQUEST);
-	}
+		/**
+		 * SESSION 영역에서 삭제
+		 * @param key
+		 */
+		public static void removeAttrFromSession(String key) {
+			if ( !StringUtils.hasText(key) ) {
+				throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
+			}
 
-	/**
-	 * SESSION 영역에서 가져오기
-	 * @param key
-	 * @return
-	 */
-	public Object getAttrFromSession(String key) {
-		if ( !StringUtils.hasText(key) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
+			ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+			attr.removeAttribute(key, RequestAttributes.SCOPE_SESSION);
 		}
-
-		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		return attr.getAttribute(key, RequestAttributes.SCOPE_SESSION);
-	}
-
-	/**
-	 * SESSION 영역에 객체 저장
-	 * @param key
-	 * @return
-	 */
-	public void setAttrToSession(String key, Object obj) {
-		if ( !StringUtils.hasText(key) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
-		}
-
-		if ( ObjectUtils.isEmpty(obj) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("obj"));
-		}
-
-		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		attr.setAttribute(key, obj, RequestAttributes.SCOPE_SESSION);
-	}
-
-	/**
-	 * SESSION 영역에서 삭제
-	 * @param key
-	 */
-	public void removeAttrFromSession(String key) {
-		if ( !StringUtils.hasText(key) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("key"));
-		}
-
-		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		attr.removeAttribute(key, RequestAttributes.SCOPE_SESSION);
 	}
 
 }

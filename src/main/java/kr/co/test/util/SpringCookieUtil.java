@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
  * -----------------------------------
  * 2024. 7. 3.  kdk	 	최초작성
  * 2025. 5. 18. 김대광	AI가 추천한 Singleton 패턴으로 변경
+ * 2025. 5. 27. 김대광	유틸은 Singleton 패턴을 사용하지 않는 것이 좋다는 의견 반영
  * </pre>
  *
  * <pre>
@@ -26,18 +27,8 @@ import org.springframework.util.StringUtils;
  */
 public class SpringCookieUtil {
 
-	private static SpringCookieUtil instance;
-
 	private SpringCookieUtil() {
 		super();
-	}
-
-	public static synchronized SpringCookieUtil getInstance() {
-		if (instance == null) {
-			instance = new SpringCookieUtil();
-		}
-
-		return instance;
 	}
 
 	/**
@@ -50,7 +41,7 @@ public class SpringCookieUtil {
 	 * @param isHttpOnly
 	 * @param domain
 	 */
-	public void addCookie(HttpServletResponse response, String name, String value, int maxAge, boolean isSecure, boolean isHttpOnly, String domain) {
+	public static void addCookie(HttpServletResponse response, String name, String value, int maxAge, boolean isSecure, boolean isHttpOnly, String domain) {
 		if ( response == null ) {
 			throw new IllegalArgumentException(ExceptionMessage.isNull("response"));
 		}
