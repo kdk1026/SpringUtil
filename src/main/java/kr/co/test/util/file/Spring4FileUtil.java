@@ -146,6 +146,11 @@ public class Spring4FileUtil {
 		try {
 			byte[] bytes = multipartFile.getBytes();
             Path path = Paths.get(sb.toString());
+
+            if ( !path.normalize().startsWith(destFilePath) ) {
+                throw new IOException("Invalid file path");
+            }
+
             Files.write(path, bytes);
 
 			fileVO = new FileVO();
