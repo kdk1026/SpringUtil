@@ -45,6 +45,8 @@ public class MailSenderComponentImpl implements MailSenderComponent {
 	@Value("${spring.mail.from}")
 	private String mailFrom;
 
+	private static final String FAILED_READ_ATTACHMENT_FILE = "Failed to read attachment file: {}";
+
 	public static class MailMultiSendResult {
 		/** 성공 개수 */
 		protected int successCnt;
@@ -78,7 +80,6 @@ public class MailSenderComponentImpl implements MailSenderComponent {
 		return this.sendmailWithAttachFileResult(html, mailToList, mailSubject, mailMsg, null);
 	}
 
-
 	@Override
 	public boolean sendmailWithAttachFile(boolean html, String mailTo, String mailSubject, String mailMsg,
 			File attachFile) {
@@ -108,7 +109,7 @@ public class MailSenderComponentImpl implements MailSenderComponent {
         } catch (MessagingException e) {
             logger.error("Error sending mail: {}", e.getMessage(), e);
         } catch (IOException e) {
-            logger.error("Failed to read attachment file: {}", (attachFile != null ? attachFile.getName() : "N/A"), e);
+            logger.error(FAILED_READ_ATTACHMENT_FILE, (attachFile != null ? attachFile.getName() : "N/A"), e);
 		} catch (Exception e) {
 			logger.error("", e);
 		}
@@ -146,7 +147,7 @@ public class MailSenderComponentImpl implements MailSenderComponent {
         } catch (MessagingException e) {
             logger.error("Error sending mail: {}", e.getMessage(), e);
         } catch (IOException e) {
-            logger.error("Failed to read attachment file: {}", (attachFile != null ? attachFile.getName() : "N/A"), e);
+            logger.error(FAILED_READ_ATTACHMENT_FILE, (attachFile != null ? attachFile.getName() : "N/A"), e);
 		} catch (Exception e) {
 			logger.error("", e);
 		}
@@ -235,7 +236,7 @@ public class MailSenderComponentImpl implements MailSenderComponent {
 				InputStreamResource inputStreamResource = new InputStreamResource(is);
 				helper.addAttachment(attachFile.getName(), inputStreamResource);
 			} catch (IOException e) {
-				logger.error("Failed to read attachment file: {}", attachFile.getName(), e);
+				logger.error(FAILED_READ_ATTACHMENT_FILE, attachFile.getName(), e);
 			}
 		}
 
@@ -261,7 +262,7 @@ public class MailSenderComponentImpl implements MailSenderComponent {
 				InputStreamResource inputStreamResource = new InputStreamResource(is);
 				helper.addAttachment(attachFile.getName(), inputStreamResource);
 			} catch (IOException e) {
-				logger.error("Failed to read attachment file: {}", attachFile.getName(), e);
+				logger.error(FAILED_READ_ATTACHMENT_FILE, attachFile.getName(), e);
 			}
 		}
 

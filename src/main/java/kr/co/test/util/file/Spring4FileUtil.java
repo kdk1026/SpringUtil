@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +22,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -57,6 +57,12 @@ public class Spring4FileUtil {
 	 * 확장자 구분자
 	 */
 	private static final char EXTENSION_SEPARATOR = '.';
+
+	private static final String REGEX_EXTRACT_LAST_CHAR = "^(.*)(.$)";
+	private static final String REPLACEMENT_LAST_CHAR = "$2";
+	private static final String PATH_SEPARATOR = "/";
+
+	private static final String REQUEST = "request";
 
 	public static class FileVO implements Serializable {
 
@@ -110,15 +116,10 @@ public class Spring4FileUtil {
 	 * @return
 	 */
 	public static FileVO uploadFile(MultipartFile multipartFile, String destFilePath) {
-		if ( multipartFile == null ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("multipartFile"));
-		}
+		Objects.requireNonNull(multipartFile, ExceptionMessage.isNull("multipartFile"));
+		Objects.requireNonNull(destFilePath.trim(), ExceptionMessage.isNull("destFilePath"));
 
-		if ( !StringUtils.hasText(destFilePath) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("destFilePath"));
-		}
-
-		destFilePath = (destFilePath.replaceAll("^(.*)(.$)", "$2").equals("/")) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
+		destFilePath = (destFilePath.replaceAll(REGEX_EXTRACT_LAST_CHAR, REPLACEMENT_LAST_CHAR).equals(PATH_SEPARATOR)) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
 
 		Path destPath = Paths.get(destFilePath);
 
@@ -169,22 +170,14 @@ public class Spring4FileUtil {
 	 * @param response
 	 */
 	public static void downloadFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
-		if ( ObjectUtils.isEmpty(fileVO) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("fileVO"));
-		}
-
-		if ( request == null ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("request"));
-		}
-
-		if ( response == null ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("response"));
-		}
+		Objects.requireNonNull(fileVO, ExceptionMessage.isNull("fileVO"));
+		Objects.requireNonNull(request, ExceptionMessage.isNull(REQUEST));
+		Objects.requireNonNull(response, ExceptionMessage.isNull("response"));
 
 		String downloadlFileNm = "";
 
 		String destFilePath = fileVO.destFilePath;
-		destFilePath = (destFilePath.replaceAll("^(.*)(.$)", "$2").equals("/")) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
+		destFilePath = (destFilePath.replaceAll(REGEX_EXTRACT_LAST_CHAR, REPLACEMENT_LAST_CHAR).equals(PATH_SEPARATOR)) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
 
 		String saveFileNm = fileVO.saveFileNm;
 		String orignlFileNm = fileVO.orignlFileNm;
@@ -215,22 +208,14 @@ public class Spring4FileUtil {
 	 * @param response
 	 */
 	public static void openPdfFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
-		if ( ObjectUtils.isEmpty(fileVO) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("fileVO"));
-		}
-
-		if ( request == null ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("request"));
-		}
-
-		if ( response == null ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("response"));
-		}
+		Objects.requireNonNull(fileVO, ExceptionMessage.isNull("fileVO"));
+		Objects.requireNonNull(request, ExceptionMessage.isNull(REQUEST));
+		Objects.requireNonNull(response, ExceptionMessage.isNull("response"));
 
 		String downloadlFileNm = "";
 
 		String destFilePath = fileVO.destFilePath;
-		destFilePath = (destFilePath.replaceAll("^(.*)(.$)", "$2").equals("/")) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
+		destFilePath = (destFilePath.replaceAll(REGEX_EXTRACT_LAST_CHAR, REPLACEMENT_LAST_CHAR).equals(PATH_SEPARATOR)) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
 
 		String saveFileNm = fileVO.saveFileNm;
 		String orignlFileNm = fileVO.orignlFileNm;
@@ -259,9 +244,7 @@ public class Spring4FileUtil {
 	 * @return
 	 */
 	public static File multipartFileToFile(MultipartFile multipartFile) {
-		if ( multipartFile == null ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("multipartFile"));
-		}
+		Objects.requireNonNull(multipartFile, ExceptionMessage.isNull("multipartFile"));
 
 		File convFile = new File(multipartFile.getOriginalFilename());
 
@@ -285,13 +268,8 @@ public class Spring4FileUtil {
 	 * @return
 	 */
 	public static String contentDisposition(HttpServletRequest request, String str) {
-		if ( request == null ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("request"));
-		}
-
-		if ( !StringUtils.hasText(str) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("str"));
-		}
+		Objects.requireNonNull(request, ExceptionMessage.isNull(REQUEST));
+		Objects.requireNonNull(str.trim(), ExceptionMessage.isNull("str"));
 
 		String sRes = "";
 		String userAgent = request.getHeader("User-Agent");
@@ -319,9 +297,7 @@ public class Spring4FileUtil {
 		 * @return
 		 */
 		public static String getFileExtension(String fileName) {
-			if ( !StringUtils.hasText(fileName) ) {
-				throw new IllegalArgumentException(ExceptionMessage.isNull("fileName"));
-			}
+			Objects.requireNonNull(fileName, ExceptionMessage.isNull("fileName"));
 
 			if (fileName.lastIndexOf(EXTENSION_SEPARATOR) == -1) {
 				return null;

@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,6 +59,12 @@ public class Spring3FileUtil {
 	 * 확장자 구분자
 	 */
 	private static final char EXTENSION_SEPARATOR = '.';
+
+	private static final String REGEX_EXTRACT_LAST_CHAR = "^(.*)(.$)";
+	private static final String REPLACEMENT_LAST_CHAR = "$2";
+	private static final String PATH_SEPARATOR = "/";
+
+	private static final String REQUEST = "request";
 
 	public static class FileVO implements Serializable {
 
@@ -112,15 +118,10 @@ public class Spring3FileUtil {
 	 * @return
 	 */
 	public static FileVO uploadFile(MultipartFile multipartFile, String destFilePath) {
-		if ( multipartFile == null ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("multipartFile"));
-		}
+		Objects.requireNonNull(multipartFile, ExceptionMessage.isNull("multipartFile"));
+		Objects.requireNonNull(destFilePath.trim(), ExceptionMessage.isNull("destFilePath"));
 
-		if ( !StringUtils.hasText(destFilePath) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("destFilePath"));
-		}
-
-		destFilePath = (destFilePath.replaceAll("^(.*)(.$)", "$2").equals("/")) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
+		destFilePath = (destFilePath.replaceAll(REGEX_EXTRACT_LAST_CHAR, REPLACEMENT_LAST_CHAR).equals(PATH_SEPARATOR)) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
 		File destFile = new File(destFilePath);
 		if (!destFile.exists()) {
 			destFile.mkdirs();
@@ -163,22 +164,14 @@ public class Spring3FileUtil {
 	 * @param response
 	 */
 	public static void downloadFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
-		if ( ObjectUtils.isEmpty(fileVO) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("fileVO"));
-		}
-
-		if ( request == null ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("request"));
-		}
-
-		if ( response == null ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("response"));
-		}
+		Objects.requireNonNull(fileVO, ExceptionMessage.isNull("fileVO"));
+		Objects.requireNonNull(request, ExceptionMessage.isNull(REQUEST));
+		Objects.requireNonNull(response, ExceptionMessage.isNull("response"));
 
 		String downloadlFileNm = "";
 
 		String destFilePath = fileVO.destFilePath;
-		destFilePath = (destFilePath.replaceAll("^(.*)(.$)", "$2").equals("/")) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
+		destFilePath = (destFilePath.replaceAll(REGEX_EXTRACT_LAST_CHAR, REPLACEMENT_LAST_CHAR).equals(PATH_SEPARATOR)) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
 
 		String saveFileNm = fileVO.saveFileNm;
 		String orignlFileNm = fileVO.orignlFileNm;
@@ -211,22 +204,14 @@ public class Spring3FileUtil {
 	 * @param response
 	 */
 	public static void openPdfFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
-		if ( ObjectUtils.isEmpty(fileVO) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("fileVO"));
-		}
-
-		if ( request == null ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("request"));
-		}
-
-		if ( response == null ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("response"));
-		}
+		Objects.requireNonNull(fileVO, ExceptionMessage.isNull("fileVO"));
+		Objects.requireNonNull(request, ExceptionMessage.isNull(REQUEST));
+		Objects.requireNonNull(response, ExceptionMessage.isNull("response"));
 
 		String downloadlFileNm = "";
 
 		String destFilePath = fileVO.destFilePath;
-		destFilePath = (destFilePath.replaceAll("^(.*)(.$)", "$2").equals("/")) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
+		destFilePath = (destFilePath.replaceAll(REGEX_EXTRACT_LAST_CHAR, REPLACEMENT_LAST_CHAR).equals(PATH_SEPARATOR)) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
 
 		String saveFileNm = fileVO.saveFileNm;
 		String orignlFileNm = fileVO.orignlFileNm;
@@ -261,13 +246,8 @@ public class Spring3FileUtil {
 	 * @return
 	 */
 	public static String contentDisposition(HttpServletRequest request, String str) {
-		if ( request == null ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("request"));
-		}
-
-		if ( !StringUtils.hasText(str) ) {
-			throw new IllegalArgumentException(ExceptionMessage.isNull("str"));
-		}
+		Objects.requireNonNull(request, ExceptionMessage.isNull(REQUEST));
+		Objects.requireNonNull(str.trim(), ExceptionMessage.isNull("str"));
 
 		String sRes = "";
 		String userAgent = request.getHeader("User-Agent");
@@ -295,9 +275,7 @@ public class Spring3FileUtil {
 		 * @return
 		 */
 		public static String getFileExtension(String fileName) {
-			if ( !StringUtils.hasText(fileName) ) {
-				throw new IllegalArgumentException(ExceptionMessage.isNull("fileName"));
-			}
+			Objects.requireNonNull(fileName, ExceptionMessage.isNull("fileName"));
 
 			if (fileName.lastIndexOf(EXTENSION_SEPARATOR) == -1) {
 				return null;
