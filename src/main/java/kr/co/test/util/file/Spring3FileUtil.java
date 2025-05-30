@@ -60,10 +60,6 @@ public class Spring3FileUtil {
 	 */
 	private static final char EXTENSION_SEPARATOR = '.';
 
-	private static final String REGEX_EXTRACT_LAST_CHAR = "^(.*)(.$)";
-	private static final String REPLACEMENT_LAST_CHAR = "$2";
-	private static final String PATH_SEPARATOR = "/";
-
 	private static final String REQUEST = "request";
 
 	public static class FileVO implements Serializable {
@@ -107,6 +103,10 @@ public class Spring3FileUtil {
 		}
 	}
 
+	private static String checkDestFilePath(String destFilePath) {
+		return (destFilePath.replaceAll("^(.*)(.$)", "$2").equals("/")) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
+	}
+
 	/**
 	 * <pre>
 	 * Spring 3 파일 업로드
@@ -121,7 +121,7 @@ public class Spring3FileUtil {
 		Objects.requireNonNull(multipartFile, ExceptionMessage.isNull("multipartFile"));
 		Objects.requireNonNull(destFilePath.trim(), ExceptionMessage.isNull("destFilePath"));
 
-		destFilePath = (destFilePath.replaceAll(REGEX_EXTRACT_LAST_CHAR, REPLACEMENT_LAST_CHAR).equals(PATH_SEPARATOR)) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
+		destFilePath = checkDestFilePath(destFilePath);
 		File destFile = new File(destFilePath);
 		if (!destFile.exists()) {
 			destFile.mkdirs();
@@ -175,7 +175,7 @@ public class Spring3FileUtil {
 		String downloadlFileNm = "";
 
 		String destFilePath = fileVO.destFilePath;
-		destFilePath = (destFilePath.replaceAll(REGEX_EXTRACT_LAST_CHAR, REPLACEMENT_LAST_CHAR).equals(PATH_SEPARATOR)) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
+		destFilePath = checkDestFilePath(destFilePath);
 
 		String saveFileNm = fileVO.saveFileNm;
 		String orignlFileNm = fileVO.orignlFileNm;
@@ -215,7 +215,7 @@ public class Spring3FileUtil {
 		String downloadlFileNm = "";
 
 		String destFilePath = fileVO.destFilePath;
-		destFilePath = (destFilePath.replaceAll(REGEX_EXTRACT_LAST_CHAR, REPLACEMENT_LAST_CHAR).equals(PATH_SEPARATOR)) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
+		destFilePath = checkDestFilePath(destFilePath);
 
 		String saveFileNm = fileVO.saveFileNm;
 		String orignlFileNm = fileVO.orignlFileNm;
