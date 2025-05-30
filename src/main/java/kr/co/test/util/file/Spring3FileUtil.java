@@ -116,8 +116,9 @@ public class Spring3FileUtil {
 	 * @param multipartFile
 	 * @param destFilePath
 	 * @return
+	 * @throws IOException
 	 */
-	public static FileVO uploadFile(MultipartFile multipartFile, String destFilePath) {
+	public static FileVO uploadFile(MultipartFile multipartFile, String destFilePath) throws IOException {
 		Objects.requireNonNull(multipartFile, ExceptionMessage.isNull("multipartFile"));
 		Objects.requireNonNull(destFilePath.trim(), ExceptionMessage.isNull("destFilePath"));
 
@@ -138,6 +139,10 @@ public class Spring3FileUtil {
 
 		File targetFile = new File(sb.toString());
 		FileVO fileVO = null;
+
+		if ( !targetFile.toPath().normalize().startsWith(destFilePath) ) {
+            throw new IOException("Entry is outside of the target directory");
+        }
 
 		try {
 			multipartFile.transferTo(targetFile);
