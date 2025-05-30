@@ -21,6 +21,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -112,12 +113,15 @@ public class Spring4FileUtil {
 	 *  - 파일 업로드 전 파일 확장자 및 MIME Type 체크 진행할 것
 	 * </pre>
 	 * @param multipartFile
-	 * @param destFilePath
+	 * @param env
 	 * @return
 	 */
-	public static FileVO uploadFile(MultipartFile multipartFile, String destFilePath) {
+	public static FileVO uploadFile(MultipartFile multipartFile, Environment env) {
 		Objects.requireNonNull(multipartFile, ExceptionMessage.isNull("multipartFile"));
-		Objects.requireNonNull(destFilePath.trim(), ExceptionMessage.isNull("destFilePath"));
+		Objects.requireNonNull(env, ExceptionMessage.isNull("env"));
+
+		String destFilePath = env.getProperty("file.upload.path");
+		Objects.requireNonNull(destFilePath.trim(), ExceptionMessage.isNull("file.upload.path"));
 
 		destFilePath = (destFilePath.replaceAll(REGEX_EXTRACT_LAST_CHAR, REPLACEMENT_LAST_CHAR).equals(PATH_SEPARATOR)) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
 
