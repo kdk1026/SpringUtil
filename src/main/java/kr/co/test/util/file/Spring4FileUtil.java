@@ -1,6 +1,5 @@
 package kr.co.test.util.file;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -241,26 +240,6 @@ public class Spring4FileUtil {
 		} catch (IOException e) {
 			logger.error("", e);
 		}
-	}
-
-	/**
-	 * Spring MultipartFile -> Java File 변환
-	 * @param multipart
-	 * @return
-	 */
-	public static File multipartFileToFile(MultipartFile multipartFile) {
-		Objects.requireNonNull(multipartFile, ExceptionMessage.isNull("multipartFile"));
-
-		File convFile = new File(multipartFile.getOriginalFilename());
-
-		try {
-			multipartFile.transferTo(convFile);
-
-		} catch (IllegalStateException | IOException e) {
-			logger.error("", e);
-		}
-
-        return convFile;
 	}
 
 	/**
