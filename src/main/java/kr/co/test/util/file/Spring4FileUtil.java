@@ -57,8 +57,6 @@ public class Spring4FileUtil {
 	 */
 	private static final char EXTENSION_SEPARATOR = '.';
 
-	private static final String REQUEST = "request";
-
 	public static class FileVO implements Serializable {
 
 		private static final long serialVersionUID = 1L;
@@ -175,7 +173,7 @@ public class Spring4FileUtil {
 	 */
 	public static void downloadFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
 		Objects.requireNonNull(fileVO, ExceptionMessage.isNull("fileVO"));
-		Objects.requireNonNull(request, ExceptionMessage.isNull(REQUEST));
+		checkRequest(request);
 		Objects.requireNonNull(response, ExceptionMessage.isNull("response"));
 
 		String downloadlFileNm = "";
@@ -213,7 +211,7 @@ public class Spring4FileUtil {
 	 */
 	public static void openPdfFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
 		Objects.requireNonNull(fileVO, ExceptionMessage.isNull("fileVO"));
-		Objects.requireNonNull(request, ExceptionMessage.isNull(REQUEST));
+		checkRequest(request);
 		Objects.requireNonNull(response, ExceptionMessage.isNull("response"));
 
 		String downloadlFileNm = "";
@@ -252,7 +250,7 @@ public class Spring4FileUtil {
 	 * @return
 	 */
 	public static String contentDisposition(HttpServletRequest request, String str) {
-		Objects.requireNonNull(request, ExceptionMessage.isNull(REQUEST));
+		checkRequest(request);
 		Objects.requireNonNull(str.trim(), ExceptionMessage.isNull("str"));
 
 		String sRes = "";
@@ -269,6 +267,10 @@ public class Spring4FileUtil {
 		}
 
 		return sRes;
+	}
+
+	private static void checkRequest(HttpServletRequest request) {
+		Objects.requireNonNull(request, ExceptionMessage.isNull("request"));
 	}
 
 	private static class InnerFileutils implements Serializable {
