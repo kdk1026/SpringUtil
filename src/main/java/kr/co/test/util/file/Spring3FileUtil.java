@@ -121,8 +121,8 @@ public class Spring3FileUtil {
 		Objects.requireNonNull(multipartFile, ExceptionMessage.isNull("multipartFile"));
 		Objects.requireNonNull(destFilePath.trim(), ExceptionMessage.isNull("destFilePath"));
 
-		String targetPath = (destFilePath.replaceAll(REGEX_EXTRACT_LAST_CHAR, REPLACEMENT_LAST_CHAR).equals(PATH_SEPARATOR)) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
-		File destFile = new File(targetPath);
+		destFilePath = (destFilePath.replaceAll(REGEX_EXTRACT_LAST_CHAR, REPLACEMENT_LAST_CHAR).equals(PATH_SEPARATOR)) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
+		File destFile = new File(destFilePath);
 		if (!destFile.exists()) {
 			destFile.mkdirs();
 		}
