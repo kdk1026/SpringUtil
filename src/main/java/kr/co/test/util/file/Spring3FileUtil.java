@@ -123,7 +123,7 @@ public class Spring3FileUtil {
 		Objects.requireNonNull(env, ExceptionMessage.isNull("env"));
 
 		String destFilePath = env.getProperty("file.upload.path");
-		Objects.requireNonNull(destFilePath.trim(), ExceptionMessage.isNull("file.upload.path"));
+		Objects.requireNonNull(destFilePath, ExceptionMessage.isNull("file.upload.path"));
 
 		destFilePath = (destFilePath.replaceAll(REGEX_EXTRACT_LAST_CHAR, REPLACEMENT_LAST_CHAR).equals(PATH_SEPARATOR)) ? destFilePath : (destFilePath + FOLDER_SEPARATOR);
 		File destFile = new File(destFilePath);
