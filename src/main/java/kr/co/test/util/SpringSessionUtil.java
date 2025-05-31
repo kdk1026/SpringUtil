@@ -5,6 +5,7 @@ import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -57,7 +58,10 @@ public class SpringSessionUtil {
 
 
 	public static void setSessionAttribute(String sKey, Object obj) {
-		Objects.requireNonNull(sKey.trim(), ExceptionMessage.isNull("sKey"));
+		if ( ObjectUtils.isEmpty(sKey.trim()) ) {
+			throw new IllegalArgumentException(ExceptionMessage.isNull("sKey"));
+		}
+
 		Objects.requireNonNull(obj, ExceptionMessage.isNull("obj"));
 
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
@@ -68,7 +72,10 @@ public class SpringSessionUtil {
 	}
 
 	public static void setSessionAttribute(String sKey, Object obj, int nSecond) {
-		Objects.requireNonNull(sKey.trim(), ExceptionMessage.isNull("sKey"));
+		if ( ObjectUtils.isEmpty(sKey.trim()) ) {
+			throw new IllegalArgumentException(ExceptionMessage.isNull("sKey"));
+		}
+
 		Objects.requireNonNull(obj, ExceptionMessage.isNull("obj"));
 
 		if ( nSecond <= 0 ) {
@@ -85,7 +92,9 @@ public class SpringSessionUtil {
 	}
 
 	public static Object getSessionAttribute(String sKey) {
-		Objects.requireNonNull(sKey.trim(), ExceptionMessage.isNull("sKey"));
+		if ( ObjectUtils.isEmpty(sKey.trim()) ) {
+			throw new IllegalArgumentException(ExceptionMessage.isNull("sKey"));
+		}
 
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 		HttpServletRequest request = attr.getRequest();

@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -117,7 +118,10 @@ public class Spring3FileUtil {
 	 */
 	public static FileVO uploadFile(MultipartFile multipartFile, String destFilePath) {
 		Objects.requireNonNull(multipartFile, ExceptionMessage.isNull("multipartFile"));
-		Objects.requireNonNull(destFilePath.trim(), ExceptionMessage.isNull("destFilePath"));
+
+		if ( ObjectUtils.isEmpty(destFilePath.trim()) ) {
+			throw new IllegalArgumentException(ExceptionMessage.inValid("destFilePath"));
+		}
 
 		destFilePath = checkDestFilePath(destFilePath);
 		File destFile = new File(destFilePath);
@@ -249,7 +253,10 @@ public class Spring3FileUtil {
 	 */
 	public static String contentDisposition(HttpServletRequest request, String str) {
 		checkRequest(request);
-		Objects.requireNonNull(str.trim(), ExceptionMessage.isNull("str"));
+
+		if ( ObjectUtils.isEmpty(str.trim()) ) {
+			throw new IllegalArgumentException(ExceptionMessage.inValid("str"));
+		}
 
 		String sRes = "";
 		String userAgent = request.getHeader("User-Agent");

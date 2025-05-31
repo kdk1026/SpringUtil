@@ -21,6 +21,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -114,7 +115,10 @@ public class Spring4FileUtil {
 	 */
 	public static FileVO uploadFile(MultipartFile multipartFile, String destFilePath) {
 		Objects.requireNonNull(multipartFile, ExceptionMessage.isNull("multipartFile"));
-		Objects.requireNonNull(destFilePath.trim(), ExceptionMessage.isNull("destFilePath"));
+
+		if ( ObjectUtils.isEmpty(destFilePath.trim()) ) {
+			throw new IllegalArgumentException(ExceptionMessage.inValid("destFilePath"));
+		}
 
 		destFilePath = checkDestFilePath(destFilePath);
 
@@ -251,7 +255,10 @@ public class Spring4FileUtil {
 	 */
 	public static String contentDisposition(HttpServletRequest request, String str) {
 		checkRequest(request);
-		Objects.requireNonNull(str.trim(), ExceptionMessage.isNull("str"));
+
+		if ( ObjectUtils.isEmpty(str.trim()) ) {
+			throw new IllegalArgumentException(ExceptionMessage.inValid("str"));
+		}
 
 		String sRes = "";
 		String userAgent = request.getHeader("User-Agent");
@@ -283,7 +290,9 @@ public class Spring4FileUtil {
 		 * @return
 		 */
 		public static String getFileExtension(String fileName) {
-			Objects.requireNonNull(fileName, ExceptionMessage.isNull("fileName"));
+			if ( ObjectUtils.isEmpty(fileName.trim()) ) {
+				throw new IllegalArgumentException(ExceptionMessage.inValid("fileName"));
+			}
 
 			if (fileName.lastIndexOf(EXTENSION_SEPARATOR) == -1) {
 				return null;
