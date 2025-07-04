@@ -56,14 +56,12 @@ public class SpringCookieUtil {
 			throw new IllegalArgumentException("value must not be null");
 		}
 
-		boolean isSecure = !LOCAL_PROFILE.equals(profile);
-
 		ResponseCookie cookie = ResponseCookie.from(value, value)
 				.path("/")
 				.maxAge(maxAge)
 				.httpOnly(true)
-				.secure(isSecure)
-				.domain( StringUtils.hasText(domain) ? domain : "" )
+				.secure(!LOCAL_PROFILE.equals(profile))
+				.domain(StringUtils.hasText(domain) ? domain : "")
 				.build();
 
 		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -88,13 +86,11 @@ public class SpringCookieUtil {
 			throw new IllegalArgumentException("value must not be null");
 		}
 
-		boolean isSecure = !LOCAL_PROFILE.equals(profile);
-
 		ResponseCookie cookie = ResponseCookie.from(value, value)
 				.path("/")
 				.httpOnly(true)
-				.secure(isSecure)
-				.domain( StringUtils.hasText(domain) ? domain : "" )
+				.secure(!LOCAL_PROFILE.equals(profile))
+				.domain(StringUtils.hasText(domain) ? domain : "")
 				.build();
 
 		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
