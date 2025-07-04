@@ -34,6 +34,8 @@ public class SpringCookieUtil {
 		super();
 	}
 
+	private static final String LOCAL_PROFILE = "local";
+
 	/**
 	 * Spring 쿠키 설정
 	 * @param response
@@ -41,9 +43,9 @@ public class SpringCookieUtil {
 	 * @param value
 	 * @param maxAge
 	 * @param domain
-	 * @param isSecure
+	 * @param profile
 	 */
-	public static void addCookie(HttpServletResponse response, String name, String value, int maxAge, String domain, boolean isSecure) {
+	public static void addCookie(HttpServletResponse response, String name, String value, int maxAge, String domain, String profile) {
 		Objects.requireNonNull(response, "response must not be null");
 
 		if ( ObjectUtils.isEmpty(name.trim()) ) {
@@ -53,6 +55,8 @@ public class SpringCookieUtil {
 		if ( ObjectUtils.isEmpty(value.trim()) ) {
 			throw new IllegalArgumentException("value must not be null");
 		}
+
+		boolean isSecure = !LOCAL_PROFILE.equals(profile);
 
 		ResponseCookie cookie = ResponseCookie.from(value, value)
 				.path("/")
@@ -70,11 +74,10 @@ public class SpringCookieUtil {
 	 * @param response
 	 * @param name
 	 * @param value
-	 * @param maxAge
 	 * @param domain
-	 * @param isSecure
+	 * @param profile
 	 */
-	public static void addSessionCookie(HttpServletResponse response, String name, String value, String domain, boolean isSecure) {
+	public static void addSessionCookie(HttpServletResponse response, String name, String value, String domain, String profile) {
 		Objects.requireNonNull(response, "response must not be null");
 
 		if ( ObjectUtils.isEmpty(name.trim()) ) {
@@ -84,6 +87,8 @@ public class SpringCookieUtil {
 		if ( ObjectUtils.isEmpty(value.trim()) ) {
 			throw new IllegalArgumentException("value must not be null");
 		}
+
+		boolean isSecure = !LOCAL_PROFILE.equals(profile);
 
 		ResponseCookie cookie = ResponseCookie.from(value, value)
 				.path("/")
