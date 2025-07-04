@@ -40,11 +40,10 @@ public class SpringCookieUtil {
 	 * @param name
 	 * @param value
 	 * @param maxAge
-	 * @param isSecure
-	 * @param isHttpOnly
 	 * @param domain
+	 * @param isSecure
 	 */
-	public static void addCookie(HttpServletResponse response, String name, String value, int maxAge, boolean isSecure, boolean isHttpOnly, String domain) {
+	public static void addCookie(HttpServletResponse response, String name, String value, int maxAge, String domain, boolean isSecure) {
 		Objects.requireNonNull(response, "response must not be null");
 
 		if ( ObjectUtils.isEmpty(name.trim()) ) {
@@ -58,8 +57,38 @@ public class SpringCookieUtil {
 		ResponseCookie cookie = ResponseCookie.from(value, value)
 				.path("/")
 				.maxAge(maxAge)
+				.httpOnly(true)
 				.secure(isSecure)
-				.httpOnly(isHttpOnly)
+				.domain( StringUtils.hasText(domain) ? domain : "" )
+				.build();
+
+		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+	}
+
+	/**
+	 * Spring 세션 쿠키 설정
+	 * @param response
+	 * @param name
+	 * @param value
+	 * @param maxAge
+	 * @param domain
+	 * @param isSecure
+	 */
+	public static void addSessionCookie(HttpServletResponse response, String name, String value, String domain, boolean isSecure) {
+		Objects.requireNonNull(response, "response must not be null");
+
+		if ( ObjectUtils.isEmpty(name.trim()) ) {
+			throw new IllegalArgumentException("name must not be null");
+		}
+
+		if ( ObjectUtils.isEmpty(value.trim()) ) {
+			throw new IllegalArgumentException("value must not be null");
+		}
+
+		ResponseCookie cookie = ResponseCookie.from(value, value)
+				.path("/")
+				.httpOnly(true)
+				.secure(isSecure)
 				.domain( StringUtils.hasText(domain) ? domain : "" )
 				.build();
 
