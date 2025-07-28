@@ -100,7 +100,7 @@ public class RestTemplateUtil {
         		if (secureHttpClient == null) {
         			secureHttpClient = HttpClients.custom()
 							.setDefaultRequestConfig(Config.REQUEST_CONFIG)
-							.setRetryHandler(new DefaultHttpRequestRetryHandler(3, false))
+							.setRetryHandler(new DefaultHttpRequestRetryHandler(1, false))
 							.setSSLHostnameVerifier(new NoopHostnameVerifier())
 							.setMaxConnTotal(100)
 							.setMaxConnPerRoute(5)
@@ -111,7 +111,7 @@ public class RestTemplateUtil {
         		if (insecureHttpClient == null) {
         			insecureHttpClient = HttpClientBuilder.create()
 							.setDefaultRequestConfig(Config.REQUEST_CONFIG)
-							.setRetryHandler(new DefaultHttpRequestRetryHandler(3, false))
+							.setRetryHandler(new DefaultHttpRequestRetryHandler(1, false))
 							.setMaxConnTotal(100)
 							.setMaxConnPerRoute(5)
 							.build();
