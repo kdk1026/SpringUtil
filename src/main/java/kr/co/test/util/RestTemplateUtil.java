@@ -10,6 +10,7 @@ import java.util.Objects;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.core.io.ByteArrayResource;
@@ -99,6 +100,7 @@ public class RestTemplateUtil {
         		if (secureHttpClient == null) {
         			secureHttpClient = HttpClients.custom()
 							.setDefaultRequestConfig(Config.REQUEST_CONFIG)
+							.setRetryHandler(new DefaultHttpRequestRetryHandler(3, false))
 							.setSSLHostnameVerifier(new NoopHostnameVerifier())
 							.setMaxConnTotal(100)
 							.setMaxConnPerRoute(5)
@@ -109,6 +111,7 @@ public class RestTemplateUtil {
         		if (insecureHttpClient == null) {
         			insecureHttpClient = HttpClientBuilder.create()
 							.setDefaultRequestConfig(Config.REQUEST_CONFIG)
+							.setRetryHandler(new DefaultHttpRequestRetryHandler(3, false))
 							.setMaxConnTotal(100)
 							.setMaxConnPerRoute(5)
 							.build();
