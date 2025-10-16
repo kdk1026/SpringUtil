@@ -16,8 +16,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
  *
  * <pre>
  * 기본적으로 단일 쓰레드
- *  - ThreadPoolTaskScheduler를 설정하면 여러 스케줄 작업을 동시에 처리 가능
- *  - 웹 요청과 충돌하지 않도록 분리해서 처리 가능
+ *  - ThreadPoolTaskScheduler를 설정
+ *    : 여러 스케줄 작업을 동시에 처리 가능
+ *    : 웹 요청과 충돌하지 않도록 분리해서 처리 가능
  *
  * 스케줄러 작업 수행 메소드
  *  - @Scheduled 어노테이션 필요
