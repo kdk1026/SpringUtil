@@ -16,6 +16,11 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  * 2025. 10. 16. 김대광	최초작성
  * </pre>
  *
+ * <pre>
+ * 비동기 작업 수행 메소드
+ *  - 타입은 void 여야 함
+ *  - @Async 어노테이션 필요
+ * </pre>
  *
  * @author 김대광
  */
