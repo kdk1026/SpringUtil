@@ -61,6 +61,17 @@ public class RestTemplateUtil {
 		super();
 	}
 
+	private static class ExceptionMessage {
+
+		private ExceptionMessage() {
+		}
+
+		public static String isNull(String paramName) {
+	        return String.format("'%s' is null", paramName);
+	    }
+
+	}
+
 	private static class RestTemplateProvider {
 		private static RestTemplate secureRestTemplate;
 		private static RestTemplate insecureRestTemplate;

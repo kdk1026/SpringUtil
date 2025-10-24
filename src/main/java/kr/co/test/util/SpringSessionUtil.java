@@ -15,6 +15,17 @@ public class SpringSessionUtil {
 		super();
 	}
 
+	private static class ExceptionMessage {
+
+		private ExceptionMessage() {
+		}
+
+		public static String isNull(String paramName) {
+	        return String.format("'%s' is null", paramName);
+	    }
+
+	}
+
 	public static final String LOGIN_SESSION_ID = "__userInfo__";
 
 	/**

@@ -33,6 +33,17 @@ public class ContextUtil {
 		super();
 	}
 
+	private static class ExceptionMessage {
+
+		private ExceptionMessage() {
+		}
+
+		public static String isNull(String paramName) {
+	        return String.format("'%s' is null", paramName);
+	    }
+
+	}
+
 	/**
 	 * 빈을 직접 얻습니다.
 	 * @param beanName

@@ -27,8 +27,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import kr.co.test.util.ExceptionMessage;
-
 /**
  * <pre>
  * 개정이력
@@ -49,6 +47,21 @@ public class Spring3FileUtil {
 
 	private Spring3FileUtil() {
 		super();
+	}
+
+	private static class ExceptionMessage {
+
+		private ExceptionMessage() {
+		}
+
+		public static String isNull(String paramName) {
+	        return String.format("'%s' is null", paramName);
+	    }
+
+		public static String inValid(String paramName) {
+			return String.format("'%s' is inValid", paramName);
+		}
+
 	}
 
 	/**

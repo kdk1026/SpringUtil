@@ -34,6 +34,21 @@ public class SpringCookieUtil {
 		super();
 	}
 
+	private static class ExceptionMessage {
+
+		private ExceptionMessage() {
+		}
+
+		public static String isNull(String paramName) {
+	        return String.format("'%s' is null", paramName);
+	    }
+
+		public static String isNullOrEmpty(String paramName) {
+	        return String.format("'%s' is null or empty", paramName);
+	    }
+
+	}
+
 	private static final String LOCAL_PROFILE = "local";
 
 	/**
@@ -46,14 +61,14 @@ public class SpringCookieUtil {
 	 * @param profile
 	 */
 	public static void addCookie(HttpServletResponse response, String name, String value, int maxAge, String domain, String profile) {
-		Objects.requireNonNull(response, "response must not be null");
+		Objects.requireNonNull(response, ExceptionMessage.isNull("response"));
 
 		if ( ObjectUtils.isEmpty(name.trim()) ) {
-			throw new IllegalArgumentException("name must not be null");
+			throw new IllegalArgumentException(ExceptionMessage.isNullOrEmpty("name"));
 		}
 
 		if ( ObjectUtils.isEmpty(value.trim()) ) {
-			throw new IllegalArgumentException("value must not be null");
+			throw new IllegalArgumentException(ExceptionMessage.isNullOrEmpty("value"));
 		}
 
 		ResponseCookie cookie = ResponseCookie.from(value, value)
@@ -76,10 +91,10 @@ public class SpringCookieUtil {
 	 * @param profile
 	 */
 	public static void addSessionCookie(HttpServletResponse response, String name, String value, String domain, String profile) {
-		Objects.requireNonNull(response, "response must not be null");
+		Objects.requireNonNull(response, ExceptionMessage.isNull("response"));
 
 		if ( ObjectUtils.isEmpty(name.trim()) ) {
-			throw new IllegalArgumentException("name must not be null");
+			throw new IllegalArgumentException(ExceptionMessage.isNullOrEmpty("name"));
 		}
 
 		if ( ObjectUtils.isEmpty(value.trim()) ) {
