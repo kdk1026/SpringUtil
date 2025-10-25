@@ -30,6 +30,8 @@ import org.springframework.util.StringUtils;
  */
 public class SpringCookieUtil {
 
+	private static final String LOCAL_PROFILE = "local";
+
 	private SpringCookieUtil() {
 		super();
 	}
@@ -48,8 +50,6 @@ public class SpringCookieUtil {
 	    }
 
 	}
-
-	private static final String LOCAL_PROFILE = "local";
 
 	/**
 	 * Spring 쿠키 설정

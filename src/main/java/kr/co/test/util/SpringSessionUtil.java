@@ -11,6 +11,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 public class SpringSessionUtil {
 
+	public static final String LOGIN_SESSION_ID = "__userInfo__";
+
 	private SpringSessionUtil() {
 		super();
 	}
@@ -25,8 +27,6 @@ public class SpringSessionUtil {
 	    }
 
 	}
-
-	public static final String LOGIN_SESSION_ID = "__userInfo__";
 
 	/**
 	 * 로그인 정보를 세션에 저장

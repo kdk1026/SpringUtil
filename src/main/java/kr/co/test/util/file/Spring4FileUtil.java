@@ -42,6 +42,16 @@ public class Spring4FileUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(Spring4FileUtil.class);
 
+	/**
+	 * 폴더 구분자
+	 */
+	private static final String FOLDER_SEPARATOR = "/";
+
+	/**
+	 * 확장자 구분자
+	 */
+	private static final char EXTENSION_SEPARATOR = '.';
+
 	private Spring4FileUtil() {
 		super();
 	}
@@ -60,16 +70,6 @@ public class Spring4FileUtil {
 		}
 
 	}
-
-	/**
-	 * 폴더 구분자
-	 */
-	private static final String FOLDER_SEPARATOR = "/";
-
-	/**
-	 * 확장자 구분자
-	 */
-	private static final char EXTENSION_SEPARATOR = '.';
 
 	public static class FileVO implements Serializable {
 
