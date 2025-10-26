@@ -38,7 +38,7 @@ public class SseEmitterUtil {
 		try {
 			sseEmitter.send(SseEmitter.event().name("connect"));
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("", e);
 		}
 
 		sseEmitters.put(uniqueId, sseEmitter);
