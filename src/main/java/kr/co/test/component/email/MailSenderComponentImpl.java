@@ -195,7 +195,12 @@ public class MailSenderComponentImpl implements MailSenderComponent {
 			nProcessCnt ++;
 		}
 
-		mailMultiSendResult = new MailMultiSendResult(nSuccessCnt, nFailureCnt, nProcessCnt, failureMailTos);
+		mailMultiSendResult = MailMultiSendResult.builder()
+				.successCnt(nSuccessCnt)
+				.failureCnt(nFailureCnt)
+				.processCnt(nProcessCnt)
+				.failureMailTos(failureMailTos)
+				.build();
 
 		return mailMultiSendResult;
 	}
