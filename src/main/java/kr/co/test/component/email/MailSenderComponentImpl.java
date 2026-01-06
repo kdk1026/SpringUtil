@@ -10,8 +10,6 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +18,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * <pre>
@@ -47,22 +49,36 @@ public class MailSenderComponentImpl implements MailSenderComponent {
 
 	private static final String FAILED_READ_ATTACHMENT_FILE = "Failed to read attachment file: {}";
 
+	 /**
+	 * <pre>
+	 * -----------------------------------
+	 * 개정이력
+	 * -----------------------------------
+	 * 2026. 1. 7. 김대광	최초작성
+	 * </pre>
+	 *
+	 * <pre>
+	 * 1) static class의 protected 변수는 동일 패키지 경로 아니면 접근 불가
+	 * 2) static class의 public 변수(C의 구조체와 유사 형태)는 SonarLint가 지적하므로 LomBok 이용한 Builder 패턴 스타일로 처리
+	 * - Make destFilePath a static final constant or non-public and provide accessors if needed.
+	 * </pre>
+	 *
+	 * @author 김대광
+	 */
+	@Getter
+	@Builder
+	@ToString
 	public static class MailMultiSendResult {
 		/** 성공 개수 */
-		protected int successCnt;
+		private int successCnt;
 
 		/** 실패 개수 */
-		protected int failureCnt;
+		private int failureCnt;
 
 		/** 처리 개수 */
-		protected int processCnt;
+		private int processCnt;
 
-		protected List<String> failureMailTos;
-
-		@Override
-		public String toString() {
-			return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
-		}
+		private List<String> failureMailTos;
 	}
 
 	@Override
@@ -158,7 +174,7 @@ public class MailSenderComponentImpl implements MailSenderComponent {
 	@Override
 	public MailMultiSendResult sendmailWithAttachFileResult(boolean html, List<String> mailToList, String mailSubject,
 			String mailMsg, File attachFile) {
-		MailMultiSendResult mailMultiSendResult = new MailMultiSendResult();
+		MailMultiSendResult mailMultiSendResult = null;
 
 		int nSuccessCnt = 0;
 		int nFailureCnt = 0;
@@ -179,10 +195,7 @@ public class MailSenderComponentImpl implements MailSenderComponent {
 			nProcessCnt ++;
 		}
 
-		mailMultiSendResult.successCnt = nSuccessCnt;
-		mailMultiSendResult.failureCnt = nFailureCnt;
-		mailMultiSendResult.processCnt = nProcessCnt;
-		mailMultiSendResult.failureMailTos = failureMailTos;
+		mailMultiSendResult = new MailMultiSendResult(nSuccessCnt, nFailureCnt, nProcessCnt, failureMailTos);
 
 		return mailMultiSendResult;
 	}
