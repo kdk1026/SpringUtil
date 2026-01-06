@@ -17,8 +17,6 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -26,6 +24,10 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * <pre>
@@ -74,45 +76,56 @@ public class Spring3FileUtil {
 
 	}
 
-	public static class FileVO implements Serializable {
-
-		private static final long serialVersionUID = 1L;
+	 /**
+	 * <pre>
+	 * -----------------------------------
+	 * 개정이력
+	 * -----------------------------------
+	 * 2026. 1. 7. 김대광	최초작성
+	 * </pre>
+	 *
+	 * <pre>
+	 * 1) static class의 protected 변수는 동일 패키지 경로 아니면 접근 불가
+	 * 2) static class의 public 변수(C의 구조체와 유사 형태)는 SonarLint가 지적하므로 LomBok 이용한 Builder 패턴 스타일로 처리
+	 * - Make destFilePath a static final constant or non-public and provide accessors if needed.
+	 * </pre>
+	 *
+	 * @author 김대광
+	 */
+	@Getter
+	@Builder
+	@ToString
+	public static class FileVO {
 
 		/**
 		 * 파일 경로
 		 */
-		protected String destFilePath;
+		private String destFilePath;
 
 		/**
 		 * 파일 확장자
 		 */
-		protected String fileExt;
+		private String fileExt;
 
 		/**
 		 * 원파일명
 		 */
-		protected String orignlFileNm;
+		private String orignlFileNm;
 
 		/**
 		 * 저장파일명
 		 */
-		protected String saveFileNm;
+		private String saveFileNm;
 
 		/**
 		 * 파일 크기
 		 */
-		protected long fileSize;
+		private long fileSize;
 
 		/**
 		 * 파일 크기 단위
 		 */
-		protected String fileSizeUnits;
-
-		public String toString() {
-			return ToStringBuilder.reflectionToString(
-				this, ToStringStyle.MULTI_LINE_STYLE
-			);
-		}
+		private String fileSizeUnits;
 	}
 
 	private static String checkDestFilePath(String destFilePath) {
@@ -128,6 +141,12 @@ public class Spring3FileUtil {
 	 * @param multipartFile
 	 * @param destFilePath
 	 * @return
+	 *
+	 * <pre>
+	 * {@code
+	 * FileVO fileVo = Spring3FileUtil.uploadFile(multipartFile, destFilePath);
+	 * }
+	 * </pre>
 	 */
 	public static FileVO uploadFile(MultipartFile multipartFile, String destFilePath) {
 		Objects.requireNonNull(multipartFile, ExceptionMessage.isNull("multipartFile"));
@@ -161,13 +180,7 @@ public class Spring3FileUtil {
 
 			multipartFile.transferTo(targetFile);
 
-			fileVO = new FileVO();
-			fileVO.destFilePath = destFilePath;
-			fileVO.orignlFileNm = multipartFile.getOriginalFilename();
-			fileVO.saveFileNm = saveFileNm;
-			fileVO.fileExt = fileExt;
-			fileVO.fileSize = multipartFile.getSize();
-			fileVO.fileSizeUnits = InnerFileutils.readableFileSize(fileVO.fileSize);
+			fileVO = new FileVO(destFilePath, fileExt, multipartFile.getOriginalFilename(), saveFileNm, multipartFile.getSize(), InnerFileutils.readableFileSize(multipartFile.getSize()));
 
 		} catch (IllegalStateException | IOException e) {
 			logger.error("", e);
@@ -181,6 +194,16 @@ public class Spring3FileUtil {
 	 * @param fileVO
 	 * @param request
 	 * @param response
+	 *
+	 * <pre>
+	 * {@code
+	 * FileVO fileVo = FileVO.builder()
+	 * 	.destFilePath(destFilePath)
+	 * 	.saveFileNm(saveFileNm)
+	 * 	.orignlFileNm(orignlFileNm)
+	 * 	.build();
+	 * }
+	 * </pre>
 	 */
 	public static void downloadFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
 		Objects.requireNonNull(fileVO, ExceptionMessage.isNull("fileVO"));
@@ -221,6 +244,16 @@ public class Spring3FileUtil {
 	 * @param fileVO
 	 * @param request
 	 * @param response
+	 *
+	 * <pre>
+	 * {@code
+	 * FileVO fileVo = FileVO.builder()
+	 * 	.destFilePath(destFilePath)
+	 * 	.saveFileNm(saveFileNm)
+	 * 	.orignlFileNm(orignlFileNm)
+	 * 	.build();
+	 * }
+	 * </pre>
 	 */
 	public static void openPdfFile(FileVO fileVO, HttpServletRequest request, HttpServletResponse response) {
 		Objects.requireNonNull(fileVO, ExceptionMessage.isNull("fileVO"));

@@ -67,6 +67,9 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/com.github.ulisesbocchio/jasypt-spring-boot-starter
 	implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5")
+
+	// https://mvnrepository.com/artifact/org.projectlombok/lombok
+	implementation("org.projectlombok:lombok:1.18.42")
 }
 
 test {
