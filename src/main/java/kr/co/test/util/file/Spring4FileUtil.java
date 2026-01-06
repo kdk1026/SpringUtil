@@ -186,7 +186,14 @@ public class Spring4FileUtil {
 
             Files.write(path, bytes);
 
-            fileVO = new FileVO(destFilePath, fileExt, multipartFile.getOriginalFilename(), saveFileNm, multipartFile.getSize(), InnerFileutils.readableFileSize(multipartFile.getSize()));
+			fileVO = FileVO.builder()
+					.destFilePath(destFilePath)
+					.fileExt(fileExt)
+					.orignlFileNm(multipartFile.getOriginalFilename())
+					.saveFileNm(saveFileNm)
+					.fileSize(multipartFile.getSize())
+					.fileSizeUnits(InnerFileutils.readableFileSize(multipartFile.getSize()))
+					.build();
 
 		} catch (IllegalStateException | IOException e) {
 			logger.error("", e);
