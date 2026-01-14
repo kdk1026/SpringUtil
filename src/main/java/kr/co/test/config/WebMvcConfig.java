@@ -16,18 +16,18 @@ import kr.co.test.config.mvc.HTMLCharacterEscapes;
  * -----------------------------------
  * 2021. 7. 31. 김대광	최초작성
  * </pre>
- * 
+ *
  *
  * @author 김대광
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-	
+
 	@Bean
-	public MappingJackson2HttpMessageConverter jsonEscapeConverter() {
+	MappingJackson2HttpMessageConverter jsonEscapeConverter() {
 		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
 		objectMapper.getFactory().setCharacterEscapes(new HTMLCharacterEscapes());
 		return new MappingJackson2HttpMessageConverter(objectMapper);
 	}
-	
+
 }
