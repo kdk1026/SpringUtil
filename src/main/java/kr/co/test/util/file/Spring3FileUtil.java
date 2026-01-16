@@ -311,20 +311,23 @@ public class Spring3FileUtil {
 			throw new IllegalArgumentException(ExceptionMessage.inValid("str"));
 		}
 
-		String sRes = "";
+		String fileName = "";
 		String userAgent = request.getHeader("User-Agent");
 
 		try {
 			if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
-				sRes = URLEncoder.encode(str, StandardCharsets.UTF_8.toString()).replace("\\+", " ");
+				fileName = URLEncoder.encode(str, StandardCharsets.UTF_8.toString()).replace("\\+", " ");
 			} else {
-				sRes = new String(str.getBytes(StandardCharsets.UTF_8.toString()), StandardCharsets.ISO_8859_1);
+				// 브라우저에서는 처리되지만 Swagger에서는 한글 깨짐
+				// fileName = new String(str.getBytes(StandardCharsets.UTF_8.toString()), StandardCharsets.ISO_8859_1);
+
+				fileName = URLEncoder.encode(str, StandardCharsets.UTF_8.toString());
 			}
 		} catch (UnsupportedEncodingException e) {
 			logger.error("", e);
 		}
 
-		return sRes;
+		return fileName;
 	}
 
 	private static void checkRequest(HttpServletRequest request) {
