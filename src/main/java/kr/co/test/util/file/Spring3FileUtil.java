@@ -76,10 +76,6 @@ public class Spring3FileUtil {
 
 	}
 
-	private static final String USER_AGENT = "User-Agent";
-	private static final String TRIDENT = "Trident";
-	private static final String CONTENT_DISPOSITION = "Content-Disposition";
-
 	 /**
 	 * <pre>
 	 * -----------------------------------
@@ -235,18 +231,10 @@ public class Spring3FileUtil {
 			downloadlFileNm = getEncodedFileName(request, orignlFileNm);
 		}
 
-		String userAgent = request.getHeader(USER_AGENT);
-
 		response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
 		response.setHeader("Content-Transfer-Encoding", "binary;");
 
-		// IE / Edge (Trident) 대응
-		if (userAgent.contains("MSIE") || userAgent.contains(TRIDENT)) {
-			response.setHeader(CONTENT_DISPOSITION, "attachment; fileName=\"" + downloadlFileNm+ "\"");
-		} else {
-			// 최신 브라우저: filename* 파라미터 사용 (RFC 5987)
-			response.setHeader(CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + downloadlFileNm);
-		}
+		setContentDisposition(request, response, downloadlFileNm);
 
 		try (
 				FileInputStream fis = new FileInputStream(destFilePath + saveFileNm);
@@ -294,17 +282,9 @@ public class Spring3FileUtil {
 			downloadlFileNm = getEncodedFileName(request, orignlFileNm);
 		}
 
-		String userAgent = request.getHeader(USER_AGENT);
-
 		response.setContentType(MediaType.APPLICATION_PDF_VALUE);
 
-		// IE / Edge (Trident) 대응
-		if (userAgent.contains("MSIE") || userAgent.contains(TRIDENT)) {
-			response.setHeader(CONTENT_DISPOSITION, "attachment; fileName=\"" + downloadlFileNm+ "\"");
-		} else {
-			// 최신 브라우저: filename* 파라미터 사용 (RFC 5987)
-			response.setHeader(CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + downloadlFileNm);
-		}
+		setContentDisposition(request, response, downloadlFileNm);
 
 		try (
 				FileInputStream fis = new FileInputStream(destFilePath + saveFileNm);
@@ -323,21 +303,14 @@ public class Spring3FileUtil {
 	 * @param str
 	 * @return
 	 */
-	public static String getEncodedFileName(HttpServletRequest request, String fileName) {
+	private static String getEncodedFileName(HttpServletRequest request, String fileName) {
 		checkRequest(request);
 
 		if ( ObjectUtils.isEmpty(fileName.trim()) ) {
 			throw new IllegalArgumentException(ExceptionMessage.inValid("fileName"));
 		}
 
-		String userAgent = request.getHeader(USER_AGENT);
-
 		try {
-			// IE / Edge (Trident) 대응
-			if (userAgent.contains("MSIE") || userAgent.contains(TRIDENT)) {
-				return URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString()).replace("+", "%20");
-			}
-
 			// RFC 5987 표준 방식 (최신 브라우저 및 Swagger 대응)
 			return URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString()).replace("+", "%20");
 		} catch (UnsupportedEncodingException e) {
@@ -348,6 +321,28 @@ public class Spring3FileUtil {
 
 	private static void checkRequest(HttpServletRequest request) {
 		Objects.requireNonNull(request, ExceptionMessage.isNull("request"));
+	}
+
+	/**
+	 * 브라우저별로 최적화된 파일 다운로드 응답 헤더를 설정
+	 * @param request
+	 * @param response
+	 * @param fileName
+	 */
+	private static void setContentDisposition(HttpServletRequest request, HttpServletResponse response, String fileName) {
+		String encodedFileName = getEncodedFileName(request, fileName);
+
+		String userAgent = request.getHeader("User-Agent");
+
+		response.setHeader("Content-Transfer-Encoding", "binary");
+
+		// IE / Edge (Trident) 대응
+		if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
+			response.setHeader("Content-Disposition", "attachment; fileName=\"" + encodedFileName+ "\"");
+		} else {
+			// 최신 브라우저: filename* 파라미터 사용 (RFC 5987)
+			response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFileName);
+		}
 	}
 
 	private static class InnerFileutils implements Serializable {
