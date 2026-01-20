@@ -73,6 +73,10 @@ public class Spring4FileUtil {
 
 	}
 
+	private static final String USER_AGENT = "User-Agent";
+	private static final String TRIDENT = "Trident";
+	private static final String CONTENT_DISPOSITION = "Content-Disposition";
+
 	 /**
 	 * <pre>
 	 * -----------------------------------
@@ -232,14 +236,23 @@ public class Spring4FileUtil {
 		String orignlFileNm = fileVO.orignlFileNm;
 
 		if ( !StringUtils.hasText(orignlFileNm) ) {
-			downloadlFileNm = contentDisposition(request, saveFileNm);
+			downloadlFileNm = getEncodedFileName(request, saveFileNm);
 		} else {
-			downloadlFileNm = contentDisposition(request, orignlFileNm);
+			downloadlFileNm = getEncodedFileName(request, orignlFileNm);
 		}
+
+		String userAgent = request.getHeader(USER_AGENT);
 
 		response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
 		response.setHeader("Content-Transfer-Encoding", "binary;");
-		response.setHeader("Content-Disposition", "attachment; filename=\"" + downloadlFileNm + "\";");
+
+		// IE / Edge (Trident) 대응
+		if (userAgent.contains("MSIE") || userAgent.contains(TRIDENT)) {
+			response.setHeader(CONTENT_DISPOSITION, "attachment; fileName=\"" + downloadlFileNm+ "\"");
+		} else {
+			// 최신 브라우저: filename* 파라미터 사용 (RFC 5987)
+			response.setHeader(CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + downloadlFileNm);
+		}
 
 		Path source = Paths.get(destFilePath + saveFileNm);
 
@@ -280,13 +293,22 @@ public class Spring4FileUtil {
 		String orignlFileNm = fileVO.orignlFileNm;
 
 		if ( !StringUtils.hasText(orignlFileNm) ) {
-			downloadlFileNm = contentDisposition(request, saveFileNm);
+			downloadlFileNm = getEncodedFileName(request, saveFileNm);
 		} else {
-			downloadlFileNm = contentDisposition(request, orignlFileNm);
+			downloadlFileNm = getEncodedFileName(request, orignlFileNm);
 		}
 
+		String userAgent = request.getHeader(USER_AGENT);
+
 		response.setContentType(MediaType.APPLICATION_PDF_VALUE);
-		response.setHeader("Content-Disposition", "inline; attachment; filename=\"" + downloadlFileNm + "\";");
+
+		// IE / Edge (Trident) 대응
+		if (userAgent.contains("MSIE") || userAgent.contains(TRIDENT)) {
+			response.setHeader(CONTENT_DISPOSITION, "attachment; fileName=\"" + downloadlFileNm+ "\"");
+		} else {
+			// 최신 브라우저: filename* 파라미터 사용 (RFC 5987)
+			response.setHeader(CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + downloadlFileNm);
+		}
 
 		Path source = Paths.get(destFilePath + saveFileNm);
 
@@ -298,38 +320,32 @@ public class Spring4FileUtil {
 	}
 
 	/**
-	 * <pre>
-	 * 브라우저에 따른 인코딩 설정
-	 *   - str은 다운로드할 파일명이나 출력할 문자열
-	 * </pre>
+	 * 브라우저에 따른 파일명 인코딩 설정 (Content-Disposition 값 생성)
 	 * @param request
 	 * @param str
 	 * @return
 	 */
-	public static String contentDisposition(HttpServletRequest request, String str) {
+	public static String getEncodedFileName(HttpServletRequest request, String fileName) {
 		checkRequest(request);
 
-		if ( ObjectUtils.isEmpty(str.trim()) ) {
-			throw new IllegalArgumentException(ExceptionMessage.inValid("str"));
+		if ( ObjectUtils.isEmpty(fileName.trim()) ) {
+			throw new IllegalArgumentException(ExceptionMessage.inValid("fileName"));
 		}
 
-		String fileName = "";
-		String userAgent = request.getHeader("User-Agent");
+		String userAgent = request.getHeader(USER_AGENT);
 
 		try {
-			if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
-				fileName = URLEncoder.encode(str, StandardCharsets.UTF_8.toString()).replace("\\+", " ");
-			} else {
-				// 브라우저에서는 처리되지만 Swagger에서는 한글 깨짐
-				// fileName = new String(str.getBytes(StandardCharsets.UTF_8.toString()), StandardCharsets.ISO_8859_1);
-
-				fileName = URLEncoder.encode(str, StandardCharsets.UTF_8.toString());
+			// IE / Edge (Trident) 대응
+			if (userAgent.contains("MSIE") || userAgent.contains(TRIDENT)) {
+				return URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString()).replace("+", "%20");
 			}
+
+			// RFC 5987 표준 방식 (최신 브라우저 및 Swagger 대응)
+			return URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString()).replace("+", "%20");
 		} catch (UnsupportedEncodingException e) {
 			logger.error("", e);
+			return fileName;
 		}
-
-		return fileName;
 	}
 
 	private static void checkRequest(HttpServletRequest request) {
