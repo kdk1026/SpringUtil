@@ -51,7 +51,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *    > Jackson
  * </pre>
  *
- * isSSL은 false로 해서 오류 나는 경우에만 true로 사용
+ * isVerify 의 경우, true로 해서 오류 나는 경우 false로
  *
  * <pre>
  * Spring Boot 3.x (Spring 6.x) 참조
