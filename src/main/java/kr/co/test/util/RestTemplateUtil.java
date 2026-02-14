@@ -198,7 +198,7 @@ public class RestTemplateUtil {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static ResponseEntity<Object> get(boolean isSSL, String url, MediaType mediaType
+	public static ResponseEntity<Object> get(boolean isVerify, String url, MediaType mediaType
 			, Map<String, Object> headerMap, Class<?> responseType, Object... uriVariables) {
 
 		if ( ObjectUtils.isEmpty(url.trim()) ) {
@@ -207,7 +207,7 @@ public class RestTemplateUtil {
 
 		Objects.requireNonNull(responseType, ExceptionMessage.isNull("responseType"));
 
-		RestTemplate restTemplate = RestTemplateUtil.getRestTemplate(isSSL);
+		RestTemplate restTemplate = RestTemplateUtil.getRestTemplate(isVerify);
 
 		HttpHeaders httpHeaders = new HttpHeaders();
 		if (mediaType != null) {
@@ -225,15 +225,15 @@ public class RestTemplateUtil {
 		}
 	}
 
-	public static ResponseEntity<Object> post(boolean isSSL, String url, MediaType mediaType
+	public static ResponseEntity<Object> post(boolean isVerify, String url, MediaType mediaType
 			, Map<String, Object> headerMap, Object body, Class<?> responseType, Object... uriVariables) throws IOException {
 
 		Map<String, Object> bodyMap = Convert.objectToMap(body);
-		return post(isSSL, url, mediaType, headerMap, bodyMap, responseType, uriVariables);
+		return post(isVerify, url, mediaType, headerMap, bodyMap, responseType, uriVariables);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static ResponseEntity<Object> post(boolean isSSL, String url, MediaType mediaType
+	public static ResponseEntity<Object> post(boolean isVerify, String url, MediaType mediaType
 			, Map<String, Object> headerMap, Map<String, Object> bodyMap, Class<?> responseType, Object... uriVariables) throws IOException {
 
 		if ( ObjectUtils.isEmpty(url.trim()) ) {
@@ -243,7 +243,7 @@ public class RestTemplateUtil {
 		Objects.requireNonNull(responseType, ExceptionMessage.isNull("responseType"));
 
 
-		RestTemplate restTemplate = RestTemplateUtil.getRestTemplate(isSSL);
+		RestTemplate restTemplate = RestTemplateUtil.getRestTemplate(isVerify);
 
 		HttpHeaders httpHeaders = new HttpHeaders();
 		if (mediaType != null) {
