@@ -7,12 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.net.ssl.SSLContext;
+
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContexts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
@@ -57,6 +60,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class RestTemplateUtil {
 
+	private static final Logger logger = LoggerFactory.getLogger(RestTemplateUtil.class);
+
 	private RestTemplateUtil() {
 		super();
 	}
@@ -72,75 +77,45 @@ public class RestTemplateUtil {
 
 	}
 
-	private static class RestTemplateProvider {
-		private static RestTemplate secureRestTemplate;
-		private static RestTemplate insecureRestTemplate;
+	private static final int TIMEOUT = 5000;
 
-		public static synchronized RestTemplate getRestTemplate(boolean isSsl) {
-			if (isSsl) {
-				if (secureRestTemplate == null) {
-					secureRestTemplate = new RestTemplate(HttpRequestFactory.getRequestFactory(true));
-				}
-				return secureRestTemplate;
-			} else {
-				if (insecureRestTemplate == null) {
-					insecureRestTemplate =  new RestTemplate(HttpRequestFactory.getRequestFactory(false));
-				}
-				return insecureRestTemplate;
-			}
+	// 일반용 (isVerify = true)
+	private static final RestTemplate VERIFIED_TEMPLATE = new RestTemplate();
+
+	// SSL 무시용 (isVerify = false)
+	private static final RestTemplate UNVERIFIED_TEMPLATE = createUnverifiedTemplate();
+
+    public static RestTemplate getRestTemplate(boolean isVerify) {
+        return isVerify ? VERIFIED_TEMPLATE : UNVERIFIED_TEMPLATE;
+    }
+
+    private static RestTemplate createUnverifiedTemplate() {
+    	try {
+    		// 모든 인증서를 신뢰하는 SSLContext 생성
+    		SSLContext sslContext = SSLContexts.custom()
+                    .loadTrustMaterial(null, (chain, authType) -> true)
+                    .build();
+
+    		// SSL 체크를 하지 않는 HttpClient 구성
+    		CloseableHttpClient httpClient = HttpClients.custom()
+                    .setSSLContext(sslContext)
+                    .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                    .setMaxConnTotal(100)
+                    .setMaxConnPerRoute(5)
+                    .setDefaultRequestConfig(RequestConfig.custom()
+                            .setConnectTimeout(TIMEOUT)
+                            .setSocketTimeout(TIMEOUT)
+                            .setConnectionRequestTimeout(TIMEOUT)
+                            .build())
+                    .build();
+
+            return new RestTemplate(new HttpComponentsClientHttpRequestFactory(httpClient));
+
+		} catch (Exception e) {
+			logger.error("RestTemplate 생성 실패", e);
+			return new RestTemplate();
 		}
-	}
-
-	private static class Config {
-		private static final int TIMEOUT = 5000;
-
-		private static final RequestConfig REQUEST_CONFIG =
-				RequestConfig.custom()
-				.setConnectTimeout(TIMEOUT)
-				.setConnectionRequestTimeout(TIMEOUT)
-				.setSocketTimeout(TIMEOUT)
-				.build();
-	}
-
-	private static class HttpClientProvider {
-		private static CloseableHttpClient secureHttpClient;
-        private static CloseableHttpClient insecureHttpClient;
-
-        public static synchronized CloseableHttpClient getHttpClient(boolean isSsl) {
-        	if (isSsl) {
-        		if (secureHttpClient == null) {
-        			secureHttpClient = HttpClients.custom()
-							.setDefaultRequestConfig(Config.REQUEST_CONFIG)
-							.setRetryHandler(new DefaultHttpRequestRetryHandler(1, false))
-							.setSSLHostnameVerifier(new NoopHostnameVerifier())
-							.setMaxConnTotal(100)
-							.setMaxConnPerRoute(5)
-							.build();
-        		}
-        		return secureHttpClient;
-        	} else {
-        		if (insecureHttpClient == null) {
-        			insecureHttpClient = HttpClientBuilder.create()
-							.setDefaultRequestConfig(Config.REQUEST_CONFIG)
-							.setRetryHandler(new DefaultHttpRequestRetryHandler(1, false))
-							.setMaxConnTotal(100)
-							.setMaxConnPerRoute(5)
-							.build();
-        		}
-        		return insecureHttpClient;
-        	}
-        }
-	}
-
-	private static class HttpRequestFactory {
-		private static HttpComponentsClientHttpRequestFactory getRequestFactory(boolean isSsl) {
-			return new HttpComponentsClientHttpRequestFactory(HttpClientProvider.getHttpClient(isSsl));
-		}
-	}
-
-	private static RestTemplate getRestTemplate(boolean isSsl) {
-		return RestTemplateProvider.getRestTemplate(isSsl);
-	}
+    }
 
 	private static class Convert {
 		@SuppressWarnings("unchecked")
