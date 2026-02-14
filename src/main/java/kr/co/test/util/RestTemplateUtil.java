@@ -2,6 +2,8 @@ package kr.co.test.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,7 @@ import javax.net.ssl.SSLContext;
 
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
@@ -91,9 +94,17 @@ public class RestTemplateUtil {
 
     private static RestTemplate createUnverifiedTemplate() {
     	try {
-    		// 모든 인증서를 신뢰하는 SSLContext 생성
-    		SSLContext sslContext = SSLContexts.custom()
-                    .loadTrustMaterial(null, (chain, authType) -> true)
+    		// 1. 모든 인증서를 신뢰하는 TrustStrategy 익명 클래스 생성
+            TrustStrategy acceptingTrustStrategy = new TrustStrategy() {
+                @Override
+                public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                    return true; // 모든 인증서를 신뢰함
+                }
+            };
+
+    		// SSLContext 생성
+            SSLContext sslContext = SSLContexts.custom()
+                    .loadTrustMaterial(null, acceptingTrustStrategy)
                     .build();
 
     		// SSL 체크를 하지 않는 HttpClient 구성
